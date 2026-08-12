@@ -28,6 +28,8 @@ def webp_dimensions(path):
 data = json.loads((ROOT / "data" / "introductions.json").read_text(encoding="utf-8"))
 items = data.get("items")
 assert isinstance(items, list) and len(items) >= 8, "introductions.items must contain the trip introductions"
+renderer = (ROOT / "app.js").read_text(encoding="utf-8")
+assert "本站版本經 16:9 裁切與 WebP 壓縮" in renderer, "photo derivative disclosure missing from renderer"
 
 required = {"id", "title", "dates", "area", "category", "summary", "features", "background", "familyTip", "sources"}
 ids = set()

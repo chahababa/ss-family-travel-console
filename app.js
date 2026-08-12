@@ -81,7 +81,7 @@ function introductionPhoto(photo) {
   return `<figure class="intro-photo">
     <img src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async" width="1280" height="720">
     <div class="intro-photo-fallback" hidden role="status">照片暫時無法載入；請參考下方行程介紹與來源資訊。</div>
-    <figcaption>${escapeHtml(photo.caption)}<span class="photo-credit">照片：${escapeHtml(photo.creator)}，${escapeHtml(photo.license)}｜<a href="${escapeHtml(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">授權條款<span class="sr-only">（在新分頁開啟）</span></a>｜<a href="${escapeHtml(photo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons 來源<span class="sr-only">（在新分頁開啟）</span></a></span></figcaption>
+    <figcaption>${escapeHtml(photo.caption)}<span class="photo-credit">照片：${escapeHtml(photo.creator)}，${escapeHtml(photo.license)}；本站版本經 16:9 裁切與 WebP 壓縮｜<a href="${escapeHtml(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">授權條款<span class="sr-only">（在新分頁開啟）</span></a>｜<a href="${escapeHtml(photo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons 來源<span class="sr-only">（在新分頁開啟）</span></a></span></figcaption>
   </figure>`;
 }
 function renderIntroductions() {

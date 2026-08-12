@@ -91,6 +91,7 @@ test('introduction photo renderer preserves accessible lazy image and attributio
   assert.match(source, /loading="lazy" decoding="async" width="1280" height="720"/);
   assert.match(source, /class="intro-photo-fallback" hidden role="status"/);
   assert.match(source, /image\.hidden = true/);
+  assert.match(source, /本站版本經 16:9 裁切與 WebP 壓縮/);
   assert.match(source, /target="_blank" rel="noopener noreferrer"/);
   assert.match(source, /escapeHtml\(photo\.(src|alt|caption|creator|license|licenseUrl|sourceUrl)\)/);
 });

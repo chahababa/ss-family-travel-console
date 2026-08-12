@@ -172,6 +172,12 @@ footer { padding: 1.2rem 1rem 2.5rem; color: var(--muted); font-size: .9rem; }
 .intro-sections { display: grid; gap: .8rem; }
 .intro-sections section { border-top: 1px solid var(--line); padding-top: .7rem; }
 .intro-sections .family-tip { border: 1px solid #c8dbe1; border-radius: .75rem; padding: .75rem; background: #eef7f8; }
+.intro-photo { display: grid; gap: .45rem; margin: 0; }
+.intro-photo img { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: .75rem; object-fit: cover; background: var(--surface-soft); }
+.intro-photo-fallback { border-left: .25rem solid var(--backup-ink); padding: .65rem .75rem; color: #5d4100; background: #fff7db; }
+.intro-photo figcaption { color: var(--muted); font-size: .82rem; line-height: 1.5; }
+.photo-credit { display: block; margin-top: .15rem; }
+.intro-photo a { color: var(--brand-dark); text-underline-offset: .16em; overflow-wrap: anywhere; }
 .intro-card details { border-top: 1px solid var(--line); padding-top: .7rem; }
 .intro-card summary { min-height: 44px; display: flex; align-items: center; color: var(--brand-dark); cursor: pointer; font-weight: 800; }
 .source-links { display: grid; gap: .35rem; margin: .25rem 0 0; padding-left: 1.25rem; }

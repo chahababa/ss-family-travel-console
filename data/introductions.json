@@ -50,7 +50,16 @@
           "url": "https://www.japan.travel/tw/spot/1518/",
           "ref": 2
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/kusatsu.webp",
+        "alt": "夜間點燈與蒸氣環繞的草津湯畑",
+        "caption": "夜間點燈與蒸氣環繞的草津湯畑",
+        "creator": "Aspere",
+        "license": "CC0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.zh-hant",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:251128_Yubatake,_Kusatsu_14.jpg"
+      }
     },
     {
       "id": "mountain-route",
@@ -107,7 +116,16 @@
           "url": "https://www.visit-gunma.jp/en/spots/shima-onsen/",
           "ref": 6
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/shima.webp",
+        "alt": "群山與河谷之間的四萬溫泉街景",
+        "caption": "群山與河谷之間的四萬溫泉街景",
+        "creator": "Kentaro Ohno",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E5%9B%9B%E4%B8%87%E6%B8%A9%E6%B3%89_%E4%B8%AD%E4%B9%8B%E6%9D%A1_2013_(9993444756).jpg"
+      }
     },
     {
       "id": "toy-kingdom",
@@ -164,7 +182,16 @@
           "url": "https://www.karuizawa-kankokyokai.jp/spot/23206/",
           "ref": 10
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/karuizawa.webp",
+        "alt": "森林綠意中的輕井澤白絲瀑布",
+        "caption": "森林綠意中的輕井澤白絲瀑布",
+        "creator": "Wei-Te Wong",
+        "license": "CC BY-SA 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Shiraito_Falls,_Karuizawa_2014-08-04_(15227325926).jpg"
+      }
     },
     {
       "id": "usui-railway",
@@ -186,7 +213,16 @@
           "url": "https://www.usuitouge.com/bunkamura/about/",
           "ref": 11
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/usui.webp",
+        "alt": "綠樹山谷中的碓冰峠紅磚眼鏡橋",
+        "caption": "碓冰峠眼鏡橋（碓冰第三橋梁）",
+        "creator": "nimame",
+        "license": "CC BY 2.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Usui_Bridge_No._3_2014-05-01_01.jpg"
+      }
     },
     {
       "id": "tokyo-local-culture",
@@ -244,7 +280,16 @@
           "title": "石見神樂官方網站：石見神樂的歷史與特色",
           "url": "https://iwamikagura.jp/about/"
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/kagura.webp",
+        "alt": "石見神樂大蛇演目的舞台場景",
+        "caption": "石見神樂大蛇演目的舞台場景",
+        "creator": "pattio",
+        "license": "CC BY-SA 3.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Susanoo-Orochi.jpg"
+      }
     },
     {
       "id": "candidate-yamba-roadside-station",
@@ -268,7 +313,16 @@
           "title": "道之驛 八ッ場故鄉館官方網站",
           "url": "https://yambamichinoeki.com/"
         }
-      ]
+      ],
+      "photo": {
+        "src": "assets/introductions/yamba.webp",
+        "alt": "群山與湖水之間的八ッ場水壩",
+        "caption": "鄰近的八ッ場水壩",
+        "creator": "Qurren",
+        "license": "CC BY-SA 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Yanba_Dam_2020-07.jpg"
+      }
     },
     {
       "id": "candidate-ron-mueck",

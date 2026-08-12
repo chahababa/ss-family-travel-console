@@ -76,10 +76,19 @@ function renderDaily() {
 function introductionSourceLinks(sources) {
   return `<ul class="source-links">${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">[${escapeHtml(source.ref)}] ${escapeHtml(source.title)}<span class="sr-only">（在新分頁開啟）</span></a></li>`).join('')}</ul>`;
 }
+function introductionPhoto(photo) {
+  if (!photo) return '';
+  return `<figure class="intro-photo">
+    <img src="${escapeHtml(photo.src)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async" width="1280" height="720">
+    <div class="intro-photo-fallback" hidden role="status">照片暫時無法載入；請參考下方行程介紹與來源資訊。</div>
+    <figcaption>${escapeHtml(photo.caption)}<span class="photo-credit">照片：${escapeHtml(photo.creator)}，${escapeHtml(photo.license)}｜<a href="${escapeHtml(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">授權條款<span class="sr-only">（在新分頁開啟）</span></a>｜<a href="${escapeHtml(photo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons 來源<span class="sr-only">（在新分頁開啟）</span></a></span></figcaption>
+  </figure>`;
+}
 function renderIntroductions() {
   const items = introductionData?.items || [];
   const cards = items.map((item) => `<article class="card intro-card" id="intro-${escapeHtml(item.id)}">
     <div class="intro-meta"><span class="intro-category">${escapeHtml(item.category)}</span><span>${escapeHtml(item.area)}</span>${item.state ? status(item.state) : ''}</div>
+    ${introductionPhoto(item.photo)}
     <h3>${escapeHtml(item.title)}</h3>
     <p class="intro-dates">${item.dates.length ? `對應行程：${item.dates.map(formatDate).join('、')}` : '對應行程：日期尚未分配'}</p>
     <p class="intro-summary">${escapeHtml(item.summary)} ${item.sources.map((source) => `<a class="citation" href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer" aria-label="官方來源 ${escapeHtml(source.ref)}">[${escapeHtml(source.ref)}]</a>`).join('')}</p>
@@ -218,6 +227,13 @@ function clearLocalState() {
 }
 
 nav.addEventListener('click', (event) => { const button = event.target.closest('[data-view]'); if (button) switchView(button.dataset.view, button); });
+app.addEventListener('error', (event) => {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement) || !image.closest('.intro-photo')) return;
+  const figure = image.closest('.intro-photo');
+  image.hidden = true;
+  figure.querySelector('.intro-photo-fallback')?.removeAttribute('hidden');
+}, true);
 app.addEventListener('click', (event) => {
   const go = event.target.closest('[data-go]'); if (go) return switchView(go.dataset.go, go);
   const dayButton = event.target.closest('[data-day]'); if (dayButton) { const day = tripData.dailyPlans[Number(dayButton.dataset.day)]; if (day) { selectedDate = day.date; writeLocal('date', selectedDate); render(); } return; }

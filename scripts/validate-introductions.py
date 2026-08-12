@@ -4,9 +4,32 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
+PHOTO_DIRECTORY = ROOT / "assets" / "introductions"
+EXPECTED_PHOTO_IDS = {
+    "kusatsu-yubatake",
+    "shima-onsen",
+    "karuizawa-nature-culture",
+    "usui-railway",
+    "candidate-iwami-kagura",
+    "candidate-yamba-roadside-station",
+}
+
+def webp_dimensions(path):
+    """Read dimensions from a lossily encoded WebP VP8 keyframe without extra deps."""
+    payload = path.read_bytes()
+    assert payload.startswith(b"RIFF") and payload[8:12] == b"WEBP", f"not a WebP: {path}"
+    marker = payload.find(b"\x9d\x01\x2a")
+    assert marker >= 0 and marker + 7 <= len(payload), f"cannot read WebP dimensions: {path}"
+    width = int.from_bytes(payload[marker + 3:marker + 5], "little") & 0x3fff
+    height = int.from_bytes(payload[marker + 5:marker + 7], "little") & 0x3fff
+    return width, height
+
+
 data = json.loads((ROOT / "data" / "introductions.json").read_text(encoding="utf-8"))
 items = data.get("items")
 assert isinstance(items, list) and len(items) >= 8, "introductions.items must contain the trip introductions"
+renderer = (ROOT / "app.js").read_text(encoding="utf-8")
+assert "本站版本經 16:9 裁切與 WebP 壓縮" in renderer, "photo derivative disclosure missing from renderer"
 
 required = {"id", "title", "dates", "area", "category", "summary", "features", "background", "familyTip", "sources"}
 ids = set()
@@ -25,10 +48,29 @@ for index, item in enumerate(items):
         assert parsed.scheme == "https" and parsed.netloc and source.get("title"), f"unsafe source: {item['id']}"
         assert isinstance(source.get("ref"), int) and source["ref"] > 0, f"invalid source ref: {item['id']}"
         source_refs.add(source["ref"])
+    photo = item.get("photo")
+    if photo is not None:
+        required_photo = {"src", "alt", "caption", "creator", "license", "licenseUrl", "sourceUrl"}
+        missing_photo = required_photo - photo.keys()
+        assert not missing_photo, f"photo missing fields: {item['id']}: {sorted(missing_photo)}"
+        assert photo["src"].startswith("assets/introductions/") and photo["src"].endswith(".webp"), f"unsafe photo src: {item['id']}"
+        photo_path = ROOT / photo["src"]
+        assert photo_path.is_file() and photo_path.stat().st_size >= 50_000, f"missing or undersized photo: {item['id']}"
+        width, height = webp_dimensions(photo_path)
+        assert width == 1280 and height == 720, f"unexpected photo dimensions: {item['id']}: {width}x{height}"
+        assert all(isinstance(photo[field], str) and photo[field].strip() for field in ("alt", "caption", "creator", "license")), f"blank photo attribution: {item['id']}"
+        for url_field in ("licenseUrl", "sourceUrl"):
+            parsed = urlparse(photo[url_field])
+            assert parsed.scheme == "https" and parsed.netloc, f"unsafe photo URL: {item['id']}"
+        assert urlparse(photo["sourceUrl"]).netloc == "commons.wikimedia.org", f"photo source must be Wikimedia Commons: {item['id']}"
+
+photo_ids = {item["id"] for item in items if item.get("photo")}
+assert photo_ids == EXPECTED_PHOTO_IDS, f"unexpected photo coverage: {sorted(photo_ids)}"
+assert len(list(PHOTO_DIRECTORY.glob("*.webp"))) == len(EXPECTED_PHOTO_IDS), "local photo file count must match photo cards"
 
 assert source_refs == set(range(1, max(source_refs) + 1)), "source refs must be contiguous"
 coverage = data.get("candidateCoverage", {})
 expected_candidates = set(coverage.get("names", []))
 actual_candidates = {item.get("sourceName") for item in items if item.get("state") == "candidate"}
 assert expected_candidates and actual_candidates == expected_candidates, f"candidate library coverage mismatch: expected={sorted(expected_candidates)}, actual={sorted(actual_candidates)}"
-print(f"INTRODUCTION DATA VALIDATION PASSED: {len(items)} cards with {len(source_refs)} numbered official HTTPS sources; {len(actual_candidates)} candidate-library items covered.")
+print(f"INTRODUCTION DATA VALIDATION PASSED: {len(items)} cards; {len(photo_ids)} licensed, local 1280x720 WebP photos; {len(source_refs)} numbered official HTTPS sources; {len(actual_candidates)} candidate-library items covered.")

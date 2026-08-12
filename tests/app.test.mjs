@@ -66,3 +66,34 @@ test('introduction snapshot covers the trip with safe official HTTPS sources', a
   const actualCandidates = new Set(introductions.items.filter((item) => item.state === 'candidate').map((item) => item.sourceName));
   assert.deepEqual(actualCandidates, expectedCandidates);
 });
+
+test('introduction photos are exactly six local licensed assets with required attribution', async () => {
+  const { default: introductions } = await import('../data/introductions.json', { with: { type: 'json' } });
+  const photos = introductions.items.filter((item) => item.photo);
+  assert.equal(photos.length, 6);
+  assert.deepEqual(photos.map((item) => item.id).sort(), [
+    'candidate-iwami-kagura', 'candidate-yamba-roadside-station', 'karuizawa-nature-culture',
+    'kusatsu-yubatake', 'shima-onsen', 'usui-railway',
+  ]);
+  for (const { photo } of photos) {
+    assert.match(photo.src, /^assets\/introductions\/[a-z]+\.webp$/);
+    assert.ok(photo.alt && photo.caption && photo.creator && photo.license);
+    assert.match(photo.licenseUrl, /^https:\/\//);
+    assert.match(photo.sourceUrl, /^https:\/\/commons\.wikimedia\.org\//);
+  }
+  assert.equal(introductions.items.find((item) => item.id === 'usui-railway').photo.caption, '碓冰峠眼鏡橋（碓冰第三橋梁）');
+  assert.equal(introductions.items.find((item) => item.id === 'candidate-yamba-roadside-station').photo.caption, '鄰近的八ッ場水壩');
+});
+
+test('introduction photo renderer preserves accessible lazy image and attribution fallback contracts', async () => {
+  const source = await (await import('node:fs/promises')).readFile(new URL('../app.js', import.meta.url), 'utf8');
+  const styles = await (await import('node:fs/promises')).readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(source, /function introductionPhoto\(photo\)/);
+  assert.match(source, /loading="lazy" decoding="async" width="1280" height="720"/);
+  assert.match(source, /class="intro-photo-fallback" hidden role="status"/);
+  assert.match(source, /image\.hidden = true/);
+  assert.match(source, /本站版本經 16:9 裁切與 WebP 壓縮/);
+  assert.match(source, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(source, /escapeHtml\(photo\.(src|alt|caption|creator|license|licenseUrl|sourceUrl)\)/);
+  assert.match(styles, /\.intro-photo img \{[^}]*width: 100%;[^}]*height: auto;[^}]*aspect-ratio: 16 \/ 9;/);
+});

@@ -1,6 +1,6 @@
 # SS Family Travel Console
 
-公開、唯讀的家庭旅行參考頁面，顯示已去識別化的行程摘要、特色與歷史介紹、官方參考來源、公開 Google Maps 導航連結，以及 Leaflet + OpenStreetMap 方位地圖。
+公開、唯讀的家庭旅行參考頁面，顯示已去識別化的行程摘要、特色與歷史介紹、行程庫候選項目、官方參考來源、公開 Google Maps 導航連結，以及 Leaflet + OpenStreetMap 方位地圖。
 
 ## 隱私與公開範圍
 

@@ -79,9 +79,9 @@ function introductionSourceLinks(sources) {
 function renderIntroductions() {
   const items = introductionData?.items || [];
   const cards = items.map((item) => `<article class="card intro-card" id="intro-${escapeHtml(item.id)}">
-    <div class="intro-meta"><span class="intro-category">${escapeHtml(item.category)}</span><span>${escapeHtml(item.area)}</span></div>
+    <div class="intro-meta"><span class="intro-category">${escapeHtml(item.category)}</span><span>${escapeHtml(item.area)}</span>${item.state ? status(item.state) : ''}</div>
     <h3>${escapeHtml(item.title)}</h3>
-    <p class="intro-dates">對應行程：${item.dates.map(formatDate).join('、')}</p>
+    <p class="intro-dates">${item.dates.length ? `對應行程：${item.dates.map(formatDate).join('、')}` : '對應行程：日期尚未分配'}</p>
     <p class="intro-summary">${escapeHtml(item.summary)} ${item.sources.map((source) => `<a class="citation" href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer" aria-label="官方來源 ${escapeHtml(source.ref)}">[${escapeHtml(source.ref)}]</a>`).join('')}</p>
     <div class="intro-sections">
       <section><h4>特色</h4><ul class="list">${item.features.map((feature) => `<li>${escapeHtml(feature)}</li>`).join('')}</ul></section>

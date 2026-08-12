@@ -7,6 +7,7 @@ const resetDialog = document.querySelector('#reset-dialog');
 const storageNotice = document.querySelector('#storage-notice');
 const nav = document.querySelector('.primary-nav');
 let tripData;
+let introductionData;
 let storageAvailable = true;
 let activeView = new URLSearchParams(window.location.search).get('view') || readLocal('view') || 'overview';
 let selectedDate = readLocal('date');
@@ -70,6 +71,28 @@ function renderDaily() {
     <div class="day-nav">${dayPicker()}<button type="button" data-day="${index - 1}" ${index === 0 ? 'disabled' : ''}>前一天</button><button type="button" data-day="${index + 1}" ${index === tripData.dailyPlans.length - 1 ? 'disabled' : ''}>下一天</button></div>
     <article class="card"><p><strong>${formatDate(day.date)}</strong>｜${escapeHtml(day.cityArea)} ${status(day.state)}</p><ul class="list">${day.highLevelItinerary.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>${sourceLine(day.source)}</article>
     <h3>公開導航</h3><ul class="route">${links}</ul>
+  </section>`;
+}
+function introductionSourceLinks(sources) {
+  return `<ul class="source-links">${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">[${escapeHtml(source.ref)}] ${escapeHtml(source.title)}<span class="sr-only">（在新分頁開啟）</span></a></li>`).join('')}</ul>`;
+}
+function renderIntroductions() {
+  const items = introductionData?.items || [];
+  const cards = items.map((item) => `<article class="card intro-card" id="intro-${escapeHtml(item.id)}">
+    <div class="intro-meta"><span class="intro-category">${escapeHtml(item.category)}</span><span>${escapeHtml(item.area)}</span></div>
+    <h3>${escapeHtml(item.title)}</h3>
+    <p class="intro-dates">對應行程：${item.dates.map(formatDate).join('、')}</p>
+    <p class="intro-summary">${escapeHtml(item.summary)} ${item.sources.map((source) => `<a class="citation" href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer" aria-label="官方來源 ${escapeHtml(source.ref)}">[${escapeHtml(source.ref)}]</a>`).join('')}</p>
+    <div class="intro-sections">
+      <section><h4>特色</h4><ul class="list">${item.features.map((feature) => `<li>${escapeHtml(feature)}</li>`).join('')}</ul></section>
+      <section><h4>歷史與背景</h4><p>${escapeHtml(item.background)}</p></section>
+      <section class="family-tip"><h4>家庭看點</h4><p>${escapeHtml(item.familyTip)}</p></section>
+    </div>
+    <details><summary>查看官方來源</summary>${introductionSourceLinks(item.sources)}</details>
+  </article>`).join('');
+  return `<section class="view" aria-labelledby="view-title">${heading('行程介紹', '把想去的地點放回特色、歷史與家庭旅行脈絡；內容依官方公開資料整理。')}
+    <aside class="notice intro-note"><strong>閱讀方式：</strong>${escapeHtml(introductionData?.note || '營業與活動資訊請以出發前官方公告為準。')}</aside>
+    <div class="intro-grid">${cards || '<p class="empty">目前沒有行程介紹</p>'}</div>
   </section>`;
 }
 function allNavigation() { return tripData.dailyPlans.flatMap((day) => day.navigation.map((link) => ({ ...link, date: day.date, cityArea: day.cityArea }))); }
@@ -173,7 +196,8 @@ function checklistCards(items) {
 function render() {
   if (!tripData) return;
   if (!selectedDate || !tripData.dailyPlans.some((day) => day.date === selectedDate)) selectedDate = tripData.dailyPlans[0].date;
-  const renderers = { overview: renderOverview, daily: renderDaily, links: renderLinks, map: renderMap, saves: renderSaves, checklist: renderChecklist };
+  const renderers = { overview: renderOverview, daily: renderDaily, introductions: renderIntroductions, links: renderLinks, map: renderMap, saves: renderSaves, checklist: renderChecklist };
+  if (!renderers[activeView]) activeView = 'overview';
   app.innerHTML = renderers[activeView]();
   nav.querySelectorAll('button').forEach((button) => button.setAttribute('aria-current', button.dataset.view === activeView ? 'page' : 'false'));
   const title = app.querySelector('h2'); if (title) title.focus();
@@ -211,7 +235,20 @@ resetDialog.addEventListener('close', () => { if (resetDialog.returnValue === 'c
 retryButton.addEventListener('click', () => loadData());
 async function loadData() {
   errorPanel.classList.add('hidden');
-  try { const response = await fetch('./data/trip-data.json', { cache: 'no-store' }); if (!response.ok) throw new Error('data request failed'); const data = await response.json(); if (!Array.isArray(data.dailyPlans) || !data.trip) throw new Error('invalid data'); tripData = data; document.querySelector('#app-title').textContent = data.trip.title; document.querySelector('#trip-range').textContent = `${formatDate(data.trip.dateRange.start)} 至 ${formatDate(data.trip.dateRange.end)}｜公開唯讀參考`; render(); }
+  try {
+    const [tripResponse, introResponse] = await Promise.all([
+      fetch('./data/trip-data.json', { cache: 'no-store' }),
+      fetch('./data/introductions.json', { cache: 'no-store' })
+    ]);
+    if (!tripResponse.ok || !introResponse.ok) throw new Error('data request failed');
+    const [data, introductions] = await Promise.all([tripResponse.json(), introResponse.json()]);
+    if (!Array.isArray(data.dailyPlans) || !data.trip || !Array.isArray(introductions.items)) throw new Error('invalid data');
+    tripData = data;
+    introductionData = introductions;
+    document.querySelector('#app-title').textContent = data.trip.title;
+    document.querySelector('#trip-range').textContent = `${formatDate(data.trip.dateRange.start)} 至 ${formatDate(data.trip.dateRange.end)}｜公開唯讀參考`;
+    render();
+  }
   catch (error) { console.error('旅程資料載入失敗', error); app.innerHTML = ''; errorPanel.classList.remove('hidden'); }
 }
 if (typeof document !== 'undefined') loadData();

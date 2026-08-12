@@ -160,6 +160,24 @@ footer { padding: 1.2rem 1rem 2.5rem; color: var(--muted); font-size: .9rem; }
 .map-popup .button-link { width: 100%; margin-top: .35rem; }
 .map-fallback-notice { margin: .8rem 1rem 1rem; border-left: .3rem solid var(--backup-ink); padding: .75rem; color: #5d4100; background: #fff7db; }
 
+.intro-note { margin: 0; }
+.intro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+.intro-card { display: grid; gap: .8rem; }
+.intro-card h3, .intro-card h4, .intro-card p { margin: 0; }
+.intro-card h4 { color: var(--brand-dark); font-size: .98rem; }
+.intro-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem .75rem; color: var(--muted); font-size: .88rem; font-weight: 700; }
+.intro-category { border-radius: 99px; padding: .15rem .55rem; color: #fff; background: var(--brand); }
+.intro-dates { color: var(--muted); font-size: .9rem; }
+.intro-summary { border-left: .25rem solid var(--brand); padding-left: .75rem; font-weight: 700; }
+.intro-sections { display: grid; gap: .8rem; }
+.intro-sections section { border-top: 1px solid var(--line); padding-top: .7rem; }
+.intro-sections .family-tip { border: 1px solid #c8dbe1; border-radius: .75rem; padding: .75rem; background: #eef7f8; }
+.intro-card details { border-top: 1px solid var(--line); padding-top: .7rem; }
+.intro-card summary { min-height: 44px; display: flex; align-items: center; color: var(--brand-dark); cursor: pointer; font-weight: 800; }
+.source-links { display: grid; gap: .35rem; margin: .25rem 0 0; padding-left: 1.25rem; }
+.source-links a { color: var(--brand-dark); text-underline-offset: .2em; overflow-wrap: anywhere; }
+.citation { color: var(--brand-dark); font-size: .82em; text-decoration-thickness: .08em; text-underline-offset: .15em; white-space: nowrap; }
+
 @media (max-width: 720px) {
   .primary-nav {
     flex-wrap: wrap;
@@ -168,6 +186,7 @@ footer { padding: 1.2rem 1rem 2.5rem; color: var(--muted); font-size: .9rem; }
   }
   .primary-nav button { flex: 1 1 calc(33.333% - .45rem); }
   .grid.three { grid-template-columns: 1fr; }
+  .intro-grid { grid-template-columns: 1fr; }
   .site-header { padding-top: 1rem; }
   main { padding: 1rem .75rem 2rem; }
   .card { padding: .85rem; }

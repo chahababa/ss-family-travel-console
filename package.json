@@ -1,0 +1,15 @@
+{
+  "name": "ss-family-travel-console",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Public, read-only family travel reference",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "validate": "python3 -m json.tool data/trip-data.json >/dev/null && scripts/verify-public-safety.sh && python3 scripts/validate-trip-data.py",
+    "serve": "python3 -m http.server 4173 --bind 127.0.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

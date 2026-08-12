@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="公開、唯讀的家庭旅程參考。">
+  <title>家庭旅程控制台</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <header class="site-header">
+    <p class="eyebrow">公開唯讀旅程參考</p>
+    <h1 id="app-title">家庭旅程控制台</h1>
+    <p id="trip-range" class="muted" aria-live="polite">載入旅程資料中…</p>
+  </header>
+  <nav class="primary-nav" aria-label="主要功能">
+    <button type="button" data-view="overview" aria-current="page">總覽</button>
+    <button type="button" data-view="daily">每日行程</button>
+    <button type="button" data-view="links">旅程連結</button>
+    <button type="button" data-view="map">地圖</button>
+    <button type="button" data-view="saves">收藏</button>
+    <button type="button" data-view="checklist">出發清單</button>
+  </nav>
+  <main id="main-content" tabindex="-1">
+    <div id="storage-notice" class="notice hidden" role="status"></div>
+    <div id="app-error" class="error-panel hidden" role="alert">
+      <h2>旅程資料暫時無法載入</h2>
+      <p>請重新整理頁面；若問題持續，請聯絡網站管理者。</p>
+      <button id="retry-data" type="button">重新載入資料</button>
+    </div>
+    <section id="app-content" aria-live="polite"></section>
+  </main>
+  <dialog id="reset-dialog" aria-labelledby="reset-title">
+    <h2 id="reset-title">清除本機狀態？</h2>
+    <p>此操作只會清除本裝置瀏覽器中的清單勾選、收藏與畫面選擇，不會變更旅程來源資料。</p>
+    <form method="dialog" class="dialog-actions">
+      <button value="cancel">取消</button>
+      <button id="confirm-reset" class="danger" value="confirm">清除本機狀態</button>
+    </form>
+  </dialog>
+  <footer><p>只讀取 <code>data/trip-data.json</code>；不連線至私人來源、郵件、雲端硬碟或訂房服務。地圖頁僅在開啟時向 Leaflet、OpenStreetMap 請求公開地圖資源。</p></footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin=""></script>
+  <script type="module" src="app.js?v=20260812-4"></script>
+</body>
+</html>

@@ -33,8 +33,26 @@ test('public map locations require finite latitude and longitude', () => {
 test('travel snapshot supplies a valid map location for every public navigation entry', async () => {
   const { default: trip } = await import('../data/trip-data.json', { with: { type: 'json' } });
   const navigation = trip.dailyPlans.flatMap((day) => day.navigation);
-  assert.equal(navigation.length, 17);
+  assert.equal(navigation.length, 26);
   assert.ok(navigation.every((entry) => hasValidMapLocation(entry.mapLocation)));
+});
+
+test('designated official itinerary is synchronized across all 11 days', async () => {
+  const { default: trip } = await import('../data/trip-data.json', { with: { type: 'json' } });
+  assert.equal(trip.officialItinerary.status, 'official');
+  assert.equal(trip.officialItinerary.sourceLabel, '使用者指定正式版行程（公開安全摘要）');
+  assert.deepEqual(
+    trip.dailyPlans.map((day) => day.date),
+    Array.from({ length: 11 }, (_, index) => `2026-08-${String(13 + index).padStart(2, '0')}`),
+  );
+  const itinerary = new Map(trip.dailyPlans.map((day) => [day.date, day.highLevelItinerary.join('｜')]));
+  assert.match(itinerary.get('2026-08-15'), /木更津港祭煙火大會/);
+  assert.match(itinerary.get('2026-08-17'), /八ッ場水壩/);
+  assert.match(itinerary.get('2026-08-18'), /四萬甌穴群/);
+  assert.match(itinerary.get('2026-08-19'), /奧四萬湖.*伊香保溫泉石段街.*碓冰峠眼鏡橋/s);
+  assert.match(itinerary.get('2026-08-20'), /鬼押出園.*白絲瀑布.*Candle Night/s);
+  const august22 = trip.dailyPlans.find((day) => day.date === '2026-08-22');
+  assert.equal(august22.navigation.find((entry) => entry.label.includes('Ron Mueck')).state, 'candidate');
 });
 
 test('introduction snapshot covers the trip with safe official HTTPS sources', async () => {

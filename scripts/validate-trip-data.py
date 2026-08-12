@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,6 +26,22 @@ def main() -> int:
     require(
         data["trip"]["states"] == ["confirmed", "candidate", "backup", "pending"],
         "state declaration does not match the required ordered contract",
+    )
+    official = data["officialItinerary"]
+    require(official["status"] == "official", "official itinerary status is not locked")
+    require(official["sourceLabel"] == "使用者指定正式版行程（公開安全摘要）", "unexpected official itinerary source label")
+    require(official["dayCount"] == 11, "official itinerary day count is not 11")
+    require(official["dateRange"] == data["trip"]["dateRange"], "official itinerary range differs from trip range")
+
+    expected_dates = []
+    current = date.fromisoformat(data["trip"]["dateRange"]["start"])
+    end = date.fromisoformat(data["trip"]["dateRange"]["end"])
+    while current <= end:
+        expected_dates.append(current.isoformat())
+        current += timedelta(days=1)
+    require(
+        [day["date"] for day in data["dailyPlans"]] == expected_dates,
+        "daily plans do not exactly cover the official date range",
     )
 
     navigation_count = 0
@@ -55,7 +72,8 @@ def main() -> int:
     print(
         "CONTRACT CHECK PASSED: "
         f"{len(data['dailyPlans'])} daily plans, {navigation_count} public Maps links, "
-        f"{len(data['saves'])} saves, {len(data['checklist'])} checklist items."
+        f"{len(data['saves'])} saves, {len(data['checklist'])} checklist items; "
+        "official itinerary source and dates locked."
     )
     return 0
 

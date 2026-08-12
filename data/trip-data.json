@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.1.0",
-  "generatedAt": "2026-08-12T22:00:00+08:00",
-  "snapshotPurpose": "Family operational trip console; sanitized, read-only source snapshot. Map coordinates are public approximate orientation data only.",
+  "generatedAt": "2026-08-13T05:45:46+08:00",
+  "snapshotPurpose": "Official family itinerary console derived from the user-designated itinerary source; sanitized and read-only. Private lodging, booking, address, insurance, payment, and expense fields are excluded.",
   "trip": {
     "title": "2026/08 日本家庭夏日旅行｜Summer Sonic",
     "dateRange": {
@@ -19,378 +19,515 @@
   "dailyPlans": [
     {
       "date": "2026-08-13",
-      "cityArea": "桃園 → 成田 → 東京／幕張",
+      "cityArea": "桃園 → 成田 → 千葉幕張",
       "highLevelItinerary": [
-        "抵達成田後前往東京／幕張",
-        "Summer Sonic 行程開始"
+        "長榮航空 BR198：09:00 桃園出發，13:25 抵達成田",
+        "抵達後前往千葉幕張並休息"
       ],
       "navigation": [
         {
-          "label": "成田機場 → 幕張",
-          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=Narita+International+Airport&destination=Makuhari%2C+Chiba%2C+Japan",
+          "label": "成田機場 → 千葉幕張",
+          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=%E6%88%90%E7%94%B0%E5%9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF+%E6%97%A5%E6%9C%AC&destination=%E5%B9%95%E5%BC%B5%E3%83%A1%E3%83%83%E3%82%BB+%E5%8D%83%E8%91%89+%E6%97%A5%E6%9C%AC",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
             "lat": 35.6473019,
             "lng": 140.0346524,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-14",
-      "cityArea": "東京／幕張",
+      "cityArea": "千葉幕張",
       "highLevelItinerary": [
-        "Summer Sonic 期間",
-        "保留雨熱天休息與室內備案彈性"
-      ],
-      "navigation": [],
-      "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "date": "2026-08-15",
-      "cityArea": "東京／幕張",
-      "highLevelItinerary": [
-        "Summer Sonic 非參加日",
-        "作為可彈性安排的完整空檔"
-      ],
-      "navigation": [],
-      "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "date": "2026-08-16",
-      "cityArea": "幕張",
-      "highLevelItinerary": [
-        "Summer Sonic 期間後段",
-        "隔日自駕前整理與休息"
-      ],
-      "navigation": [],
-      "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "date": "2026-08-17",
-      "cityArea": "幕張 → 草津",
-      "highLevelItinerary": [
-        "上午取車後由幕張前往草津",
-        "草津溫泉街與湯畑"
+        "Summer Sonic 韓團日",
+        "BABYMONSTER 演出",
+        "場館周邊用餐與室內休息",
+        "JENNIE 演出"
       ],
       "navigation": [
         {
-          "label": "幕張 → 草津溫泉",
-          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=Makuhari%2C+Chiba%2C+Japan&destination=Kusatsu+Onsen%2C+Gunma%2C+Japan",
+          "label": "幕張展覽館",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%B9%95%E5%BC%B5%E3%83%A1%E3%83%83%E3%82%BB+%E5%8D%83%E8%91%89+%E6%97%A5%E6%9C%AC",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.6229392,
-            "lng": 138.5967297,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 35.6473019,
+            "lng": 140.0346524,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        }
+      ],
+      "state": "confirmed",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "date": "2026-08-15",
+      "cityArea": "千葉幕張 → 木更津",
+      "highLevelItinerary": [
+        "江川海岸",
+        "木更津港",
+        "19:05–20:30 木更津港祭煙火大會"
+      ],
+      "navigation": [
+        {
+          "label": "江川海岸",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B1%9F%E5%B7%9D%E6%B5%B7%E5%B2%B8+%E6%9C%A8%E6%9B%B4%E6%B4%A5+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.4014203,
+            "lng": 139.9021355,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "木更津港",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%9C%A8%E6%9B%B4%E6%B4%A5%E6%B8%AF+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.3814139,
+            "lng": 139.9190909,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        }
+      ],
+      "state": "confirmed",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "date": "2026-08-16",
+      "cityArea": "千葉幕張",
+      "highLevelItinerary": [
+        "Summer Sonic 音樂祭",
+        "Jamiroquai 演出"
+      ],
+      "navigation": [
+        {
+          "label": "幕張展覽館",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%B9%95%E5%BC%B5%E3%83%A1%E3%83%83%E3%82%BB+%E5%8D%83%E8%91%89+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.6473019,
+            "lng": 140.0346524,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        }
+      ],
+      "state": "confirmed",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "date": "2026-08-17",
+      "cityArea": "千葉幕張 → 八ッ場 → 草津溫泉",
+      "highLevelItinerary": [
+        "上午取車後由千葉幕張出發",
+        "高坂服務區午餐休息",
+        "八ッ場水壩與湖景休息",
+        "草津湯畑夜景與溫泉街"
+      ],
+      "navigation": [
+        {
+          "label": "高坂服務區（下行）",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%AB%98%E5%9D%82%E3%82%B5%E3%83%BC%E3%83%93%E3%82%B9%E3%82%A8%E3%83%AA%E3%82%A2+%E4%B8%8B%E3%82%8A+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.9865478,
+            "lng": 139.3856594,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "八ッ場水壩",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E3%83%83%E5%A0%B4%E3%83%80%E3%83%A0+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 36.557082,
+            "lng": 138.7145902,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
           "label": "草津湯畑",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Yubatake%2C+Kusatsu%2C+Gunma%2C+Japan",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B9%AF%E7%95%91+%E8%8D%89%E6%B4%A5%E7%94%BA",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
             "lat": 36.6229392,
             "lng": 138.5967297,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-18",
-      "cityArea": "草津 → 渋峠／橫手山 → 四萬溫泉",
+      "cityArea": "草津溫泉 → 四萬溫泉",
       "highLevelItinerary": [
-        "山區路線依晴天、能見度與道路狀態調整",
-        "晚間前往四萬溫泉"
+        "上午草津溫泉與湯畑散步",
+        "四萬甌穴群",
+        "四萬清流親水活動",
+        "傍晚抵達四萬溫泉並休息"
       ],
       "navigation": [
         {
-          "label": "渋峠",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Shibu+Pass%2C+Gunma%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "草津湯畑",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B9%AF%E7%95%91+%E8%8D%89%E6%B4%A5%E7%94%BA",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.6664287,
-            "lng": 138.5343963,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.6229392,
+            "lng": 138.5967297,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
-          "label": "橫手山",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Yokoteyama%2C+Nagano%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "四萬甌穴群",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%9B%9B%E4%B8%87%E3%81%AE%E7%94%8C%E7%A9%B4%E7%BE%A4+%E7%BE%A4%E9%A6%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.6687418,
-            "lng": 138.5261155,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
-          }
-        },
-        {
-          "label": "萬座溫泉",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Manza+Onsen%2C+Gunma%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
-          "mapLocation": {
-            "lat": 36.6400581,
-            "lng": 138.4999501,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.66514,
+            "lng": 138.79343,
+            "source": "Google Places public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
           "label": "四萬溫泉",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Shima+Onsen%2C+Nakanojo%2C+Gunma%2C+Japan",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%9B%9B%E4%B8%87%E6%B8%A9%E6%B3%89+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.6745035,
-            "lng": 138.7842033,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.6857315,
+            "lng": 138.7743845,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-19",
-      "cityArea": "四萬溫泉 → 輕井澤／北輕井澤",
+      "cityArea": "四萬溫泉 → 伊香保 → 碓冰峠 → 輕井澤",
       "highLevelItinerary": [
-        "前往輕井澤／北輕井澤",
-        "親子景點依天氣與體力安排"
+        "10:00–11:00 奧四萬湖環湖與展望點",
+        "伊香保溫泉石段街",
+        "碓冰峠眼鏡橋與舊碓冰峠",
+        "傍晚抵達輕井澤並安排 Outlet"
       ],
       "navigation": [
         {
-          "label": "四萬溫泉 → 輕井澤",
-          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=Shima+Onsen%2C+Nakanojo%2C+Gunma%2C+Japan&destination=Karuizawa%2C+Nagano%2C+Japan",
+          "label": "奧四萬湖",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E5%A5%A5%E5%9B%9B%E4%B8%87%E6%B9%96+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.3482938,
-            "lng": 138.5969968,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.7014659,
+            "lng": 138.7838334,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
-          "label": "輕井澤玩具王國",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Karuizawa+Toy+Kingdom%2C+Gunma%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "伊香保溫泉石段街",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E4%BC%8A%E9%A6%99%E4%BF%9D%E7%9F%B3%E6%AE%B5%E8%A1%97+%E6%B8%8B%E5%B7%9D%E5%B8%82",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.473116,
-            "lng": 138.5425453,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.497658,
+            "lng": 138.9163875,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "碓冰峠眼鏡橋",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%A2%93%E6%B0%B7%E7%AC%AC%E4%B8%89%E6%A9%8B%E6%A2%81+%E3%82%81%E3%81%8C%E3%81%AD%E6%A9%8B+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 36.3579734,
+            "lng": 138.6982767,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "輕井澤 Prince Shopping Plaza",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%BB%BD%E4%BA%95%E6%B2%A2%E3%83%BB%E3%83%97%E3%83%AA%E3%83%B3%E3%82%B9%E3%82%B7%E3%83%A7%E3%83%83%E3%83%94%E3%83%B3%E3%82%B0%E3%83%97%E3%83%A9%E3%82%B6",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 36.3391616,
+            "lng": 138.6331098,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-20",
       "cityArea": "輕井澤／北輕井澤",
       "highLevelItinerary": [
-        "親子與戶外活動依天氣安排",
-        "保留室內與溫泉備案"
+        "11:40–13:10 鬼押出園火山熔岩步道",
+        "13:20–13:50 淺間牧場",
+        "15:20–16:00 白絲瀑布",
+        "21:00–21:30 輕井澤高原教會 Candle Night"
       ],
       "navigation": [
         {
-          "label": "輕井澤高原教會",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Karuizawa+Kogen+Church%2C+Nagano%2C+Japan",
-          "state": "pending",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "鬼押出園",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%AC%BC%E6%8A%BC%E5%87%BA%E3%81%97%E5%9C%92+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.3582228,
-            "lng": 138.5891689,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.4438285,
+            "lng": 138.5324873,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
-          "label": "Picchio 空中飛鼠觀察",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Picchio%2C+Karuizawa%2C+Nagano%2C+Japan",
-          "state": "pending",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "淺間牧場",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B5%85%E9%96%93%E7%89%A7%E5%A0%B4+%E7%BE%A4%E9%A6%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.3636511,
-            "lng": 138.5914128,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.443164,
+            "lng": 138.5789898,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
           "label": "白絲瀑布",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Shiraito+Falls%2C+Karuizawa%2C+Nagano%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E7%99%BD%E7%B3%B8%E3%81%AE%E6%BB%9D+%E8%BB%BD%E4%BA%95%E6%B2%A2+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
             "lat": 36.4103914,
             "lng": 138.5924843,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
-          }
-        }
-      ],
-      "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "date": "2026-08-21",
-      "cityArea": "輕井澤 → 東京",
-      "highLevelItinerary": [
-        "返還租車後回東京",
-        "入住上野／淺草區域"
-      ],
-      "navigation": [
-        {
-          "label": "輕井澤 → 東京",
-          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=Karuizawa%2C+Nagano%2C+Japan&destination=Ueno%2C+Tokyo%2C+Japan",
-          "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
-          "mapLocation": {
-            "lat": 35.7117081,
-            "lng": 139.7761542,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
-          "label": "碓冰峠鐵道文化村",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Usui+Pass+Railway+Heritage+Park%2C+Gunma%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "label": "輕井澤高原教會",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E8%BB%BD%E4%BA%95%E6%B2%A2%E9%AB%98%E5%8E%9F%E6%95%99%E4%BC%9A+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 36.3368121,
-            "lng": 138.7324976,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 36.3582228,
+            "lng": 138.5891689,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "date": "2026-08-21",
+      "cityArea": "輕井澤 → 東京上野",
+      "highLevelItinerary": [
+        "09:00–10:00 雲場池散步",
+        "10:15–11:45 舊輕井澤銀座逛街",
+        "午餐後離開輕井澤並前往東京",
+        "傍晚抵達上野／淺草，晚餐與自由活動"
+      ],
+      "navigation": [
+        {
+          "label": "雲場池",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%9B%B2%E5%A0%B4%E6%B1%A0+%E8%BB%BD%E4%BA%95%E6%B2%A2+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 36.350658,
+            "lng": 138.626833,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "舊輕井澤銀座",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%97%A7%E8%BB%BD%E4%BA%95%E6%B2%A2%E9%8A%80%E5%BA%A7+%E8%BB%BD%E4%BA%95%E6%B2%A2%E7%94%BA",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 36.3598831,
+            "lng": 138.6368547,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "輕井澤 → 東京上野",
+          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=%E8%BB%BD%E4%BA%95%E6%B2%A2%E9%A7%85+%E6%97%A5%E6%9C%AC&destination=%E4%B8%8A%E9%87%8E%E9%A7%85+%E6%9D%B1%E4%BA%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.7140413,
+            "lng": 139.7771164,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
+          }
+        }
+      ],
+      "state": "confirmed",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-22",
       "cityArea": "東京",
       "highLevelItinerary": [
-        "東京完整活動日",
-        "購物、家庭需求與行李整理依當日狀態彈性安排"
+        "麻布十番納涼祭",
+        "文具行與東京購物",
+        "Ron Mueck 朗・穆克雕塑展（候選）",
+        "晚間整理行李"
       ],
       "navigation": [
         {
           "label": "麻布十番納涼祭",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Azabu+Juban+Noryo+Festival%2C+Tokyo%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%BA%BB%E5%B8%83%E5%8D%81%E7%95%AA+%E6%9D%B1%E4%BA%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 35.6551771,
-            "lng": 139.7370659,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 35.6551687,
+            "lng": 139.7372062,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         },
         {
           "label": "銀座伊東屋",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Ginza+Itoya%2C+Tokyo%2C+Japan",
-          "state": "candidate",
-          "source": "公開行程摘要（不含私人來源）",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E9%8A%80%E5%BA%A7+%E4%BC%8A%E6%9D%B1%E5%B1%8B+%E6%9D%B1%E4%BA%AC+%E6%97%A5%E6%9C%AC",
+          "state": "confirmed",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 35.672957,
-            "lng": 139.7674251,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "lat": 35.6731273,
+            "lng": 139.7672138,
+            "source": "Google Places public place lookup (2026-08-13); visual orientation only"
+          }
+        },
+        {
+          "label": "森美術館｜Ron Mueck 展（候選）",
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%A3%AE%E7%BE%8E%E8%A1%93%E9%A4%A8+%E6%9D%B1%E4%BA%AC+%E6%97%A5%E6%9C%AC",
+          "state": "candidate",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
+          "mapLocation": {
+            "lat": 35.660432,
+            "lng": 139.729261,
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "date": "2026-08-23",
-      "cityArea": "東京 → 成田 → 桃園",
+      "cityArea": "東京上野 → 成田 → 桃園",
       "highLevelItinerary": [
-        "由東京前往成田返台"
+        "09:30–11:00 京成 Skyliner 前往成田機場",
+        "長榮航空 BR197：14:25 成田出發，17:05 抵達桃園"
       ],
       "navigation": [
         {
-          "label": "東京 → 成田機場",
-          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=Ueno%2C+Tokyo%2C+Japan&destination=Narita+International+Airport",
+          "label": "東京上野 → 成田機場",
+          "mapsUrl": "https://www.google.com/maps/dir/?api=1&origin=%E4%B8%8A%E9%87%8E%E9%A7%85+%E6%9D%B1%E4%BA%AC+%E6%97%A5%E6%9C%AC&destination=%E6%88%90%E7%94%B0%E5%9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF+%E6%97%A5%E6%9C%AC",
           "state": "confirmed",
-          "source": "公開行程摘要（不含私人來源）",
+          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
             "lat": 35.7758714,
             "lng": 140.3933101,
-            "source": "OpenStreetMap public place lookup (2026-08-12); visual orientation only"
+            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
           }
         }
       ],
       "state": "confirmed",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     }
   ],
   "saves": [
     {
-      "label": "室內備案：文具行、百貨、車站商圈、博物館",
-      "cityArea": "東京／幕張",
+      "label": "室內備案：文具行、百貨、車站商圈與美術館",
+      "cityArea": "東京／千葉幕張",
       "state": "backup",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     },
     {
       "label": "雨天備案：溫泉、商場與室內活動",
-      "cityArea": "輕井澤／北輕井澤",
+      "cityArea": "群馬／輕井澤",
       "state": "backup",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "label": "未列入正式表的山區景點：渋峠、橫手山、萬座溫泉",
+      "cityArea": "群馬山區",
+      "state": "backup",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     }
   ],
   "checklist": [
     {
-      "label": "確認山區道路、火山與天候狀態",
-      "dateContext": "2026-08-18 前與當日",
-      "state": "pending",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "label": "確認橫手山當日營業狀態",
-      "dateContext": "2026-08-18 前一天",
-      "state": "pending",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "label": "確認幕張住宿退房與取車時間交接",
-      "dateContext": "2026-08-17 前",
-      "state": "pending",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "label": "確認高原教會活動登記與 Picchio 預約可行性",
-      "dateContext": "輕井澤活動前",
-      "state": "pending",
-      "source": "公開行程摘要（不含私人來源）"
-    },
-    {
-      "label": "出發前重查天氣、雷雨與交通",
+      "label": "出發前重查天氣、雷雨與山區道路狀態",
       "dateContext": "出發前與山區移動當日",
       "state": "pending",
-      "source": "公開行程摘要（不含私人來源）"
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "label": "確認木更津港祭煙火大會當日公告與交通管制",
+      "dateContext": "2026-08-15 前",
+      "state": "pending",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "label": "確認輕井澤高原教會 Candle Night 當日入場與停車公告",
+      "dateContext": "2026-08-20 前",
+      "state": "pending",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+    },
+    {
+      "label": "確認麻布十番納涼祭與 Ron Mueck 展當日公告",
+      "dateContext": "2026-08-22 前",
+      "state": "pending",
+      "source": "正式行程公開安全摘要（2026-08-13 同步）"
     }
   ],
   "sourceNotes": [
     {
-      "note": "此公開摘要只保留目前有效的高層行程；較舊的相互衝突資訊未採用。",
+      "note": "此版以使用者指定試算表中的 D1–D11 為正式行程來源。",
       "state": "confirmed"
     },
     {
-      "note": "8/18 住宿與路線以四萬溫泉順序為目前有效參考；萬座僅保留為候選景點，不視為確認住宿。",
+      "note": "試算表明載「候選」的 Ron Mueck 展保留候選標籤；其餘逐日活動依正式表列入。",
       "state": "confirmed"
     },
     {
-      "note": "無法確認的細節均標為待確認，未自行補猜。",
+      "note": "舊版但未出現在正式表的渋峠、橫手山、萬座溫泉、玩具王國與鐵道文化村不再列為正式當日行程。",
+      "state": "confirmed"
+    },
+    {
+      "note": "公開版不含住宿、地址、訂位代碼、價格、保險、財務或私人接送資料。",
+      "state": "confirmed"
+    },
+    {
+      "note": "營業時間、演出、祭典、道路與入場方式仍以出發前官方公告為準。",
       "state": "pending"
     }
-  ]
+  ],
+  "officialItinerary": {
+    "status": "official",
+    "sourceLabel": "使用者指定正式版行程（公開安全摘要）",
+    "syncedAt": "2026-08-13T05:45:46+08:00",
+    "dateRange": {
+      "start": "2026-08-13",
+      "end": "2026-08-23"
+    },
+    "dayCount": 11,
+    "privacyBoundary": "公開版只含日期、地區、活動順序、公開導航與狀態；排除住宿、地址、訂位、價格、保險、財務與私人接送資料。"
+  }
 }

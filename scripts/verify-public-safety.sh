@@ -10,7 +10,9 @@ TARGETS=(
   "$ROOT/styles.css"
   "$ROOT/package.json"
   "$ROOT/data/trip-data.json"
+  "$ROOT/data/introductions.json"
   "$ROOT/scripts/validate-trip-data.py"
+  "$ROOT/scripts/validate-introductions.py"
 )
 
 for path in "${TARGETS[@]}"; do

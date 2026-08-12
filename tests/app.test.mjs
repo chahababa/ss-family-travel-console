@@ -36,3 +36,12 @@ test('travel snapshot supplies a valid map location for every public navigation 
   assert.equal(navigation.length, 17);
   assert.ok(navigation.every((entry) => hasValidMapLocation(entry.mapLocation)));
 });
+
+test('introduction snapshot covers the trip with safe official HTTPS sources', async () => {
+  const { default: introductions } = await import('../data/introductions.json', { with: { type: 'json' } });
+  assert.ok(introductions.items.length >= 8);
+  assert.ok(introductions.items.every((item) => item.features.length >= 3));
+  assert.ok(introductions.items.every((item) => item.background && item.familyTip));
+  assert.ok(introductions.items.flatMap((item) => item.sources).every((source) => source.url.startsWith('https://')));
+  assert.equal(new Set(introductions.items.flatMap((item) => item.sources.map((source) => source.ref))).size, 13);
+});

@@ -68,6 +68,24 @@ test('weather response parser rejects malformed, unsafe, and nonmatching respons
   assert.equal(isOpenMeteoOutOfRangePayload({ error: true, reason: 'invalid latitude' }), false);
 });
 
+test('weather response parser enforces broad physical ranges and temperature order', () => {
+  const withValues = ({ code = 0, max = 70, min = -100, probability = 100, rain = 2500, wind = 500 } = {}) => ({
+    timezone: 'Asia/Tokyo',
+    daily: {
+      time: ['2026-08-13'], weather_code: [code], temperature_2m_max: [max], temperature_2m_min: [min],
+      precipitation_probability_max: [probability], precipitation_sum: [rain], wind_speed_10m_max: [wind],
+    },
+  });
+  assert.doesNotThrow(() => parseOpenMeteoDaily(withValues(), '2026-08-13'));
+  for (const payload of [
+    withValues({ max: 70.1 }), withValues({ min: -100.1 }), withValues({ max: 10, min: 11 }),
+    withValues({ code: -1 }), withValues({ code: 1.5 }), withValues({ probability: -0.1 }),
+    withValues({ probability: 100.1 }), withValues({ rain: -0.1 }), withValues({ rain: 2500.1 }),
+    withValues({ wind: -0.1 }), withValues({ wind: 500.1 }),
+    withValues({ max: 1e100, min: -1e100, wind: 1e100 }),
+  ]) assert.throws(() => parseOpenMeteoDaily(payload, '2026-08-13'), TypeError);
+});
+
 test('WMO mappings cover specified common codes and keep unknown code unconfirmed', () => {
   for (const code of [0, 1, 2, 3, 45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99]) assert.notEqual(weatherCodeLabel(code).description, '天氣狀況待確認');
   assert.deepEqual(weatherCodeLabel(999), { icon: '❔', description: '天氣狀況待確認' });

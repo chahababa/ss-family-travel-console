@@ -72,6 +72,15 @@ export const isOpenMeteoOutOfRangePayload = (payload) => Boolean(
 
 const finiteNumber = (value) => typeof value === 'number' && Number.isFinite(value);
 const validResponseDate = (value) => typeof value === 'string' && ISO_DATE.test(value);
+const inRange = (value, minimum, maximum) => value >= minimum && value <= maximum;
+
+// Broad Earth-weather sanity bounds: accept exceptional conditions, reject corrupt/extreme payloads.
+const WEATHER_VALUE_BOUNDS = Object.freeze({
+  temperatureC: Object.freeze([-100, 70]),
+  precipitationProbability: Object.freeze([0, 100]),
+  precipitationMm: Object.freeze([0, 2500]),
+  windSpeedKmh: Object.freeze([0, 500]),
+});
 
 export const parseOpenMeteoDaily = (payload, expectedDate) => {
   if (!validResponseDate(expectedDate) || !payload || typeof payload !== 'object'
@@ -95,9 +104,13 @@ export const parseOpenMeteoDaily = (payload, expectedDate) => {
     precipitationSum: daily.precipitation_sum[index],
     windSpeedMax: daily.wind_speed_10m_max[index],
   };
-  if (!Number.isInteger(result.weatherCode)
-    || result.precipitationProbabilityMax < 0 || result.precipitationProbabilityMax > 100
-    || result.precipitationSum < 0 || result.windSpeedMax < 0) throw new TypeError('Unsafe weather values');
+  if (!Number.isInteger(result.weatherCode) || result.weatherCode < 0
+    || !inRange(result.temperatureMin, ...WEATHER_VALUE_BOUNDS.temperatureC)
+    || !inRange(result.temperatureMax, ...WEATHER_VALUE_BOUNDS.temperatureC)
+    || result.temperatureMin > result.temperatureMax
+    || !inRange(result.precipitationProbabilityMax, ...WEATHER_VALUE_BOUNDS.precipitationProbability)
+    || !inRange(result.precipitationSum, ...WEATHER_VALUE_BOUNDS.precipitationMm)
+    || !inRange(result.windSpeedMax, ...WEATHER_VALUE_BOUNDS.windSpeedKmh)) throw new TypeError('Unsafe weather values');
   return Object.freeze(result);
 };
 

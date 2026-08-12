@@ -87,6 +87,7 @@ test('introduction photos are exactly six local licensed assets with required at
 
 test('introduction photo renderer preserves accessible lazy image and attribution fallback contracts', async () => {
   const source = await (await import('node:fs/promises')).readFile(new URL('../app.js', import.meta.url), 'utf8');
+  const styles = await (await import('node:fs/promises')).readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(source, /function introductionPhoto\(photo\)/);
   assert.match(source, /loading="lazy" decoding="async" width="1280" height="720"/);
   assert.match(source, /class="intro-photo-fallback" hidden role="status"/);
@@ -94,4 +95,5 @@ test('introduction photo renderer preserves accessible lazy image and attributio
   assert.match(source, /本站版本經 16:9 裁切與 WebP 壓縮/);
   assert.match(source, /target="_blank" rel="noopener noreferrer"/);
   assert.match(source, /escapeHtml\(photo\.(src|alt|caption|creator|license|licenseUrl|sourceUrl)\)/);
+  assert.match(styles, /\.intro-photo img \{[^}]*width: 100%;[^}]*height: auto;[^}]*aspect-ratio: 16 \/ 9;/);
 });

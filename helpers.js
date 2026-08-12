@@ -16,3 +16,105 @@ export const hasValidMapLocation = (value) => Boolean(
 
 // Snapshot labels and areas are read-only here, so this is a stable local-only pin key.
 export const saveId = (save) => `${save.cityArea}|${save.label}`;
+
+export const OPEN_METEO_FORECAST_ORIGIN = 'https://api.open-meteo.com';
+export const OPEN_METEO_FORECAST_PATH = '/v1/forecast';
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const DAILY_FIELDS = [
+  'weather_code',
+  'temperature_2m_max',
+  'temperature_2m_min',
+  'precipitation_probability_max',
+  'precipitation_sum',
+  'wind_speed_10m_max',
+];
+
+export const isValidWeatherLocation = (location) => Boolean(
+  location && typeof location.date === 'string' && ISO_DATE.test(location.date)
+  && typeof location.locationLabel === 'string' && location.locationLabel.trim()
+  && Number.isFinite(location.lat) && location.lat >= -90 && location.lat <= 90
+  && Number.isFinite(location.lng) && location.lng >= -180 && location.lng <= 180
+);
+
+export const hasValidWeatherConfig = (config, expectedDates = []) => {
+  if (!config || config.schemaVersion !== '1.0.0' || !Array.isArray(config.locations)) return false;
+  const dates = config.locations.map((location) => location?.date);
+  return config.locations.every(isValidWeatherLocation)
+    && new Set(dates).size === dates.length
+    && (!expectedDates.length || (dates.length === expectedDates.length && expectedDates.every((date) => dates.includes(date))));
+};
+
+export const buildOpenMeteoUrl = (location) => {
+  if (!isValidWeatherLocation(location)) throw new TypeError('Invalid public weather location');
+  const url = new URL(OPEN_METEO_FORECAST_PATH, OPEN_METEO_FORECAST_ORIGIN);
+  url.search = new URLSearchParams({
+    latitude: String(location.lat),
+    longitude: String(location.lng),
+    daily: DAILY_FIELDS.join(','),
+    timezone: 'Asia/Tokyo',
+    start_date: location.date,
+    end_date: location.date,
+  }).toString();
+  if (url.origin !== OPEN_METEO_FORECAST_ORIGIN || url.pathname !== OPEN_METEO_FORECAST_PATH || url.protocol !== 'https:') {
+    throw new TypeError('Unsafe weather endpoint');
+  }
+  return url;
+};
+
+export class WeatherOutOfRangeError extends Error {
+  constructor() { super('Selected date is outside the returned forecast range'); this.name = 'WeatherOutOfRangeError'; }
+}
+
+export const isOpenMeteoOutOfRangePayload = (payload) => Boolean(
+  payload && payload.error === true && typeof payload.reason === 'string'
+  && /out of allowed range/i.test(payload.reason)
+);
+
+const finiteNumber = (value) => typeof value === 'number' && Number.isFinite(value);
+const validResponseDate = (value) => typeof value === 'string' && ISO_DATE.test(value);
+
+export const parseOpenMeteoDaily = (payload, expectedDate) => {
+  if (!validResponseDate(expectedDate) || !payload || typeof payload !== 'object'
+    || payload.timezone !== 'Asia/Tokyo' || !payload.daily || typeof payload.daily !== 'object') {
+    throw new TypeError('Malformed weather response');
+  }
+  const { daily } = payload;
+  if (!Array.isArray(daily.time) || !daily.time.length || !daily.time.every(validResponseDate)) throw new TypeError('Malformed weather dates');
+  if (!DAILY_FIELDS.every((field) => Array.isArray(daily[field]) && daily[field].length === daily.time.length)) {
+    throw new TypeError('Malformed weather daily fields');
+  }
+  if (!DAILY_FIELDS.every((field) => daily[field].every(finiteNumber))) throw new TypeError('Unsafe weather values');
+  const index = daily.time.indexOf(expectedDate);
+  if (index === -1) throw new WeatherOutOfRangeError();
+  const result = {
+    date: expectedDate,
+    weatherCode: daily.weather_code[index],
+    temperatureMax: daily.temperature_2m_max[index],
+    temperatureMin: daily.temperature_2m_min[index],
+    precipitationProbabilityMax: daily.precipitation_probability_max[index],
+    precipitationSum: daily.precipitation_sum[index],
+    windSpeedMax: daily.wind_speed_10m_max[index],
+  };
+  if (!Number.isInteger(result.weatherCode)
+    || result.precipitationProbabilityMax < 0 || result.precipitationProbabilityMax > 100
+    || result.precipitationSum < 0 || result.windSpeedMax < 0) throw new TypeError('Unsafe weather values');
+  return Object.freeze(result);
+};
+
+const WMO_WEATHER = {
+  0: ['☀️', '晴朗'], 1: ['🌤️', '大致晴朗'], 2: ['⛅', '局部多雲'], 3: ['☁️', '陰天'],
+  45: ['🌫️', '有霧'], 48: ['🌫️', '霧淞'],
+  51: ['🌦️', '毛毛雨（弱）'], 53: ['🌦️', '毛毛雨（中）'], 55: ['🌧️', '毛毛雨（強）'],
+  56: ['🌧️', '凍毛毛雨（弱）'], 57: ['🌧️', '凍毛毛雨（強）'],
+  61: ['🌦️', '小雨'], 63: ['🌧️', '中雨'], 65: ['🌧️', '大雨'],
+  66: ['🌧️', '凍雨（弱）'], 67: ['🌧️', '凍雨（強）'],
+  71: ['🌨️', '小雪'], 73: ['🌨️', '中雪'], 75: ['❄️', '大雪'], 77: ['🌨️', '霰'],
+  80: ['🌦️', '陣雨（弱）'], 81: ['🌧️', '陣雨（中）'], 82: ['⛈️', '陣雨（強）'],
+  85: ['🌨️', '陣雪（弱）'], 86: ['❄️', '陣雪（強）'],
+  95: ['⛈️', '雷雨'], 96: ['⛈️', '雷雨伴隨小冰雹'], 99: ['⛈️', '雷雨伴隨大冰雹'],
+};
+
+export const weatherCodeLabel = (code) => {
+  const weather = WMO_WEATHER[code];
+  return weather ? { icon: weather[0], description: weather[1] } : { icon: '❔', description: '天氣狀況待確認' };
+};

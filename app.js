@@ -1,4 +1,5 @@
-import { isSafeMapsUrl, stateLabel, storageKey, saveId, hasValidMapLocation } from './helpers.js?v=20260812-4';
+import { isSafeMapsUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, weatherCodeLabel } from './helpers.js?v=20260813-6';
+import { DailyWeatherController } from './weather.js?v=20260813-2';
 
 const app = document.querySelector('#app-content');
 const errorPanel = document.querySelector('#app-error');
@@ -8,6 +9,10 @@ const storageNotice = document.querySelector('#storage-notice');
 const nav = document.querySelector('.primary-nav');
 let tripData;
 let introductionData;
+let weatherLocations = new Map();
+let weatherConfigIssue = false;
+let weatherState = { status: 'idle' };
+const weatherController = new DailyWeatherController({ onStateChange: (state) => { weatherState = state; updateWeatherPanel(); } });
 let storageAvailable = true;
 let activeView = new URLSearchParams(window.location.search).get('view') || readLocal('view') || 'overview';
 let selectedDate = readLocal('date');
@@ -45,6 +50,41 @@ function mapsAction(link) {
 }
 function sourceLine(source) { return `<p class="source">來源：${escapeHtml(source)}</p>`; }
 function heading(title, description = '') { return `<header><h2 id="view-title" tabindex="-1">${title}</h2>${description ? `<p class="muted">${description}</p>` : ''}</header>`; }
+function formatWeatherNumber(value, maximumFractionDigits = 0) {
+  return new Intl.NumberFormat('zh-TW', { maximumFractionDigits, minimumFractionDigits: 0 }).format(value);
+}
+function formatFetchedAt(value) {
+  if (!value) return '';
+  return new Intl.DateTimeFormat('zh-TW', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Tokyo' }).format(new Date(value));
+}
+function weatherPanelMarkup() {
+  const location = weatherLocations.get(selectedDate);
+  if (!location || weatherConfigIssue) return `<aside class="weather-panel weather-error" role="alert"><h3>每日天氣</h3><p>天氣設定暫時無法使用；原行程內容不受影響。</p></aside>`;
+  const label = escapeHtml(location.locationLabel);
+  if (weatherState.status === 'loading' || weatherState.status === 'idle' || weatherState.location?.date !== selectedDate) {
+    return `<aside class="weather-panel" role="status" aria-live="polite"><h3>每日天氣</h3><p>代表地區：${label}</p><p>正在載入此日預報…</p></aside>`;
+  }
+  if (weatherState.status === 'out-of-range') {
+    return `<aside class="weather-panel weather-out-of-range" role="status" aria-live="polite"><h3>每日天氣</h3><p>代表地區：${label}</p><p>此日期尚未進入或已超出預報可用範圍，因此不顯示推測資料。</p>${weatherSourceMarkup()}</aside>`;
+  }
+  if (weatherState.status === 'error') {
+    return `<aside class="weather-panel weather-error" role="alert"><h3>每日天氣</h3><p>代表地區：${label}</p><p>暫時無法取得預報；原行程內容不受影響。</p><button type="button" class="weather-retry" data-weather-retry>重試取得天氣</button>${weatherSourceMarkup()}</aside>`;
+  }
+  const { weather, fetchedAt } = weatherState;
+  const code = weatherCodeLabel(weather.weatherCode);
+  return `<aside class="weather-panel weather-loaded" aria-live="polite"><h3>每日天氣</h3><p class="weather-area">代表地區：${label}</p><p class="weather-summary"><span aria-hidden="true">${code.icon}</span> <strong>${escapeHtml(code.description)}</strong></p><dl class="weather-metrics"><div><dt>最高／最低</dt><dd>${formatWeatherNumber(weather.temperatureMax, 1)}°C／${formatWeatherNumber(weather.temperatureMin, 1)}°C</dd></div><div><dt>最高降雨機率</dt><dd>${formatWeatherNumber(weather.precipitationProbabilityMax)}%</dd></div><div><dt>預估降雨量</dt><dd>${formatWeatherNumber(weather.precipitationSum, 1)} mm</dd></div><div><dt>最大風速</dt><dd>${formatWeatherNumber(weather.windSpeedMax, 1)} km/h</dd></div></dl><p class="weather-fetched">頁面取得時間（日本時間）：${escapeHtml(formatFetchedAt(fetchedAt))}</p>${weatherSourceMarkup()}</aside>`;
+}
+function weatherSourceMarkup() {
+  return `<p class="weather-source">來源：<a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo.com</a>｜<a href="https://open-meteo.com/en/docs" target="_blank" rel="noopener noreferrer">Forecast API</a>｜<a href="https://open-meteo.com/en/licence" target="_blank" rel="noopener noreferrer">CC BY 4.0 資料授權</a>。預報會變動；山區、雷雨或祭典前請查官方最新資訊。瀏覽器只會送出所選日期的公開代表座標，不會傳送整份行程或私人資料。</p>`;
+}
+function updateWeatherPanel() {
+  const target = document.querySelector('#daily-weather-panel');
+  if (target) target.innerHTML = weatherPanelMarkup();
+}
+function loadSelectedWeather() {
+  const location = weatherLocations.get(selectedDate);
+  if (activeView === 'daily' && location && !weatherConfigIssue) weatherController.load(location);
+}
 
 function renderOverview() {
   const today = new Date().toISOString().slice(0, 10);
@@ -69,6 +109,7 @@ function renderDaily() {
   const links = day.navigation.length ? day.navigation.map((link) => `<li class="card"><h3>${escapeHtml(link.label)} ${status(link.state)}</h3>${mapsAction(link)}${sourceLine(link.source)}</li>`).join('') : '<p class="empty">此日尚無儲存的公開導航連結</p>';
   return `<section class="view" aria-labelledby="view-title">${heading('每日行程', '日期選擇會在本裝置瀏覽器中保留。')}
     <div class="day-nav">${dayPicker()}<button type="button" data-day="${index - 1}" ${index === 0 ? 'disabled' : ''}>前一天</button><button type="button" data-day="${index + 1}" ${index === tripData.dailyPlans.length - 1 ? 'disabled' : ''}>下一天</button></div>
+    <div id="daily-weather-panel">${weatherPanelMarkup()}</div>
     <article class="card"><p><strong>${formatDate(day.date)}</strong>｜${escapeHtml(day.cityArea)} ${status(day.state)}</p><ul class="list">${day.highLevelItinerary.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>${sourceLine(day.source)}</article>
     <h3>公開導航</h3><ul class="route">${links}</ul>
   </section>`;
@@ -213,6 +254,8 @@ function render() {
   showStorageNotice();
   if (activeView === 'links') updateLinkCount(allNavigation());
   if (activeView === 'map') initMap();
+  if (activeView === 'daily') loadSelectedWeather();
+  else weatherController.cancel();
 }
 function updateLinkCount(links) { const count = document.querySelector('#link-count'); if (count) count.textContent = `共 ${links.length} 個公開導航連結`; }
 function switchView(view, trigger) { activeView = view; lastTrigger = trigger; writeLocal('view', view); render(); }
@@ -236,6 +279,7 @@ app.addEventListener('error', (event) => {
 }, true);
 app.addEventListener('click', (event) => {
   const go = event.target.closest('[data-go]'); if (go) return switchView(go.dataset.go, go);
+  const weatherRetry = event.target.closest('[data-weather-retry]'); if (weatherRetry) { weatherController.retry(); return; }
   const dayButton = event.target.closest('[data-day]'); if (dayButton) { const day = tripData.dailyPlans[Number(dayButton.dataset.day)]; if (day) { selectedDate = day.date; writeLocal('date', selectedDate); render(); } return; }
   const pin = event.target.closest('[data-pin]'); if (pin) { const value = pin.dataset.pin; isPinned(value) ? removeLocal('pin', value) : writeLocal('pin', 'true', value); render(); return; }
   if (event.target.id === 'open-reset') { lastTrigger = event.target; resetDialog.showModal(); }
@@ -252,13 +296,20 @@ retryButton.addEventListener('click', () => loadData());
 async function loadData() {
   errorPanel.classList.add('hidden');
   try {
-    const [tripResponse, introResponse] = await Promise.all([
+    const [tripResponse, introResponse, weatherResponse] = await Promise.all([
       fetch('./data/trip-data.json', { cache: 'no-store' }),
-      fetch('./data/introductions.json', { cache: 'no-store' })
+      fetch('./data/introductions.json', { cache: 'no-store' }),
+      fetch('./data/weather-locations.json', { cache: 'no-store' }).catch(() => null)
     ]);
     if (!tripResponse.ok || !introResponse.ok) throw new Error('data request failed');
-    const [data, introductions] = await Promise.all([tripResponse.json(), introResponse.json()]);
+    const [data, introductions] = await Promise.all([
+      tripResponse.json(),
+      introResponse.json()
+    ]);
+    const weatherConfig = weatherResponse?.ok ? await weatherResponse.json().catch(() => null) : null;
     if (!Array.isArray(data.dailyPlans) || !data.trip || !Array.isArray(introductions.items)) throw new Error('invalid data');
+    weatherConfigIssue = !hasValidWeatherConfig(weatherConfig, data.dailyPlans.map((day) => day.date));
+    weatherLocations = weatherConfigIssue ? new Map() : new Map(weatherConfig.locations.map((location) => [location.date, location]));
     tripData = data;
     introductionData = introductions;
     document.querySelector('#app-title').textContent = data.trip.title;

@@ -7,11 +7,14 @@ TARGETS=(
   "$ROOT/index.html"
   "$ROOT/app.js"
   "$ROOT/helpers.js"
+  "$ROOT/weather.js"
   "$ROOT/styles.css"
   "$ROOT/package.json"
   "$ROOT/data/trip-data.json"
   "$ROOT/data/introductions.json"
+  "$ROOT/data/weather-locations.json"
   "$ROOT/scripts/validate-trip-data.py"
+  "$ROOT/scripts/validate-weather-locations.py"
   "$ROOT/scripts/validate-introductions.py"
 )
 

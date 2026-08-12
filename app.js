@@ -150,7 +150,10 @@ function initMap() {
   }
 }
 function renderSaves() {
-  const groups = Object.groupBy(tripData.saves, ({ cityArea }) => cityArea);
+  const groups = tripData.saves.reduce((result, save) => {
+    (result[save.cityArea] ||= []).push(save);
+    return result;
+  }, {});
   const cards = Object.entries(groups).map(([area, saves]) => `<article class="card"><h3>${escapeHtml(area)}</h3>${saves.map((save) => { const id = saveId(save); return `<div><p><strong>${escapeHtml(save.label)}</strong> ${status(save.state)}</p>${sourceLine(save.source)}<button type="button" data-pin="${escapeHtml(id)}">${isPinned(id) ? '取消本機收藏' : '本機收藏'}</button></div>`; }).join('')}</article>`).join('');
   return `<section class="view" aria-labelledby="view-title">${heading('收藏', '這些是選用想法與備案，不會轉為已確認行程。')}${cards || '<p class="empty">目前沒有備選收藏</p>'}</section>`;
 }

@@ -161,6 +161,12 @@ footer { padding: 1.2rem 1rem 2.5rem; color: var(--muted); font-size: .9rem; }
 .map-fallback-notice { margin: .8rem 1rem 1rem; border-left: .3rem solid var(--backup-ink); padding: .75rem; color: #5d4100; background: #fff7db; }
 
 @media (max-width: 720px) {
+  .primary-nav {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding-inline: .75rem;
+  }
+  .primary-nav button { flex: 1 1 calc(33.333% - .45rem); }
   .grid.three { grid-template-columns: 1fr; }
   .site-header { padding-top: 1rem; }
   main { padding: 1rem .75rem 2rem; }

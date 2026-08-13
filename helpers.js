@@ -7,12 +7,24 @@ export const isSafeMapsUrl = (value) => {
   } catch { return false; }
 };
 
+export const APPROVED_DRIVE_FOLDER_URLS = Object.freeze([
+  'https://drive.google.com/drive/folders/1Vb20JQC1-UUqdad0n9Qhlq1ydvM71nb5',
+  'https://drive.google.com/drive/folders/1kNWR0Yuf2_wcqAFTK0HQESRdqdc-imKi',
+  'https://drive.google.com/drive/folders/1yUYqMIAUxxuFFkgWNi-wN_ZFrrMe2AwB',
+  'https://drive.google.com/drive/folders/1QA46EnxcPuEuy7RcNo0uw2wFLAJbZ-v4',
+  'https://drive.google.com/drive/folders/1TzIF8enZ_mQ9TVQZGA2HGA-M-DA0ZRzQ',
+]);
+const APPROVED_DRIVE_FOLDER_URL_SET = new Set(APPROVED_DRIVE_FOLDER_URLS);
+
 export const isSafeDriveFolderUrl = (value) => {
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && url.hostname === 'drive.google.com'
+    return typeof value === 'string' && url.href === value
+      && url.protocol === 'https:' && url.hostname === 'drive.google.com'
+      && !url.username && !url.password && !url.port
       && /^\/drive\/folders\/[A-Za-z0-9_-]+$/.test(url.pathname)
-      && !url.search && !url.hash;
+      && !url.search && !url.hash
+      && APPROVED_DRIVE_FOLDER_URL_SET.has(value);
   } catch { return false; }
 };
 
@@ -25,10 +37,12 @@ export const hasValidPrivateDocumentShortcuts = (config) => Boolean(
   hasExactKeys(config, ['schemaVersion', 'shortcuts'])
   && config.schemaVersion === '1.0.0' && Array.isArray(config.shortcuts)
   && config.shortcuts.length === 5
+  && new Set(config.shortcuts.map((shortcut) => shortcut?.url)).size === APPROVED_DRIVE_FOLDER_URLS.length
   && config.shortcuts.every((shortcut) => hasExactKeys(shortcut, ['label', 'description', 'url'])
     && typeof shortcut.label === 'string' && shortcut.label.trim()
     && typeof shortcut.description === 'string' && shortcut.description.trim()
-    && isSafeDriveFolderUrl(shortcut.url))
+    && isSafeDriveFolderUrl(shortcut.url)
+    && APPROVED_DRIVE_FOLDER_URL_SET.has(shortcut.url))
 );
 
 export const storageKey = (section, id = '') => `ss-travel-console:v1:${section}${id ? `:${id}` : ''}`;

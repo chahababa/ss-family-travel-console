@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import html
 import re
 import subprocess
 import sys
@@ -66,10 +67,17 @@ def tracked_texts() -> dict[str, str]:
     return texts
 
 
+def normalize_executable_url_text(text: str) -> str:
+    normalized = html.unescape(text)
+    normalized = re.sub(r"\\u0*03a|\\x3a", ":", normalized, flags=re.IGNORECASE)
+    normalized = re.sub(r"\\u0*02f|\\x2f", "/", normalized, flags=re.IGNORECASE)
+    return normalized.replace(r"\/", "/")
+
+
 def validate_whole_public_artifact() -> None:
     observed: set[str] = set()
     for text in tracked_texts().values():
-        for match in COMPLETE_DRIVE_URL.findall(text):
+        for match in COMPLETE_DRIVE_URL.findall(normalize_executable_url_text(text)):
             observed.add(match.rstrip(".,;:!?"))
     require(
         observed == EXPECTED_URLS,

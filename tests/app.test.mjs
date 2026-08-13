@@ -30,27 +30,48 @@ test('private document shortcuts accept only five approved Google Drive folder U
     ...config,
     shortcuts: config.shortcuts.map((shortcut, index) => index ? shortcut : { ...shortcut, unexpected: 'metadata' }),
   }), false);
+  assert.equal(hasValidPrivateDocumentShortcuts({
+    ...config,
+    shortcuts: config.shortcuts.map((shortcut, index) => index === 4 ? { ...shortcut, url: config.shortcuts[0].url } : shortcut),
+  }), false);
+  const arbitraryFolderUrl = ['https://drive.google.com', '/drive/folders/', 'synthetic-unapproved'].join('');
+  assert.equal(isSafeDriveFolderUrl(arbitraryFolderUrl), false);
+  assert.equal(hasValidPrivateDocumentShortcuts({
+    ...config,
+    shortcuts: config.shortcuts.map((shortcut, index) => index === 4 ? { ...shortcut, url: arbitraryFolderUrl } : shortcut),
+  }), false);
   const individualFileUrl = ['https://drive.google.com', '/file', '/d/example'].join('');
   const folderUrlWithQuery = ['https://drive.google.com', '/drive/folders', '/example', '?usp=', 'sharing'].join('');
   assert.equal(isSafeDriveFolderUrl(individualFileUrl), false);
   assert.equal(isSafeDriveFolderUrl(folderUrlWithQuery), false);
+  assert.equal(isSafeDriveFolderUrl(`https://name@${new URL(config.shortcuts[0].url).host}${new URL(config.shortcuts[0].url).pathname}`), false);
   assert.equal(isSafeDriveFolderUrl('https://example.com/drive/folders/example'), false);
 });
 
-test('whole-artifact validator rejects an unapproved sixth Drive folder URL outside config', async () => {
+test('whole-artifact validator rejects literal and encoded sixth Drive folder URLs outside config', async () => {
   const fixture = await mkdtemp(join(tmpdir(), 'ss-private-doc-validator-'));
   try {
     await mkdir(join(fixture, 'scripts'), { recursive: true });
     await mkdir(join(fixture, 'data'), { recursive: true });
     await cp(new URL('../scripts/validate-private-document-shortcuts.py', import.meta.url), join(fixture, 'scripts', 'validate-private-document-shortcuts.py'));
     await cp(new URL('../data/private-document-shortcuts.json', import.meta.url), join(fixture, 'data', 'private-document-shortcuts.json'));
-    const extraUrl = ['https://drive.google.com', '/drive/folders/', 'synthetic-unapproved-sixth'].join('');
-    await writeFile(join(fixture, 'app.js'), `export const injected = ${JSON.stringify(extraUrl)};\n`);
     execFileSync('git', ['init', '--quiet'], { cwd: fixture });
-    execFileSync('git', ['add', '.'], { cwd: fixture });
-    const result = spawnSync('python3', ['scripts/validate-private-document-shortcuts.py'], { cwd: fixture, encoding: 'utf8' });
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /tracked public artifact must expose exactly the five approved Drive folder URLs/);
+    const host = 'drive.google.com';
+    const path = '/drive/folders/synthetic-unapproved-sixth';
+    const fixtures = [
+      `export const injected = 'https://${host}${path}';\n`,
+      "export const injected = 'https:\\/\\/" + host + path + "';\n",
+      "export const injected = 'https:\\u002f\\u002f" + host + path + "';\n",
+      `<a href="https${'&#58;'}//${host}${path}">fixture</a>\n`,
+      "export const injected = 'https:\\x2f\\x2f" + host + path + "';\n",
+    ];
+    for (const injection of fixtures) {
+      await writeFile(join(fixture, 'injected-source.html'), injection);
+      execFileSync('git', ['add', '.'], { cwd: fixture });
+      const result = spawnSync('python3', ['scripts/validate-private-document-shortcuts.py'], { cwd: fixture, encoding: 'utf8' });
+      assert.notEqual(result.status, 0, `validator unexpectedly accepted ${injection}`);
+      assert.match(result.stderr, /tracked public artifact must expose exactly the five approved Drive folder URLs/);
+    }
   } finally {
     await rm(fixture, { recursive: true, force: true });
   }

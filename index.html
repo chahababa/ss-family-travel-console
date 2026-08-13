@@ -6,7 +6,7 @@
   <meta name="description" content="公開、唯讀的家庭旅程參考。">
   <title>家庭旅程控制台</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="">
-  <link rel="stylesheet" href="styles.css?v=20260813-4">
+  <link rel="stylesheet" href="styles.css?v=20260813-6">
 </head>
 <body>
   <a class="skip-link" href="#main-content">跳到主要內容</a>
@@ -41,8 +41,8 @@
       <button id="confirm-reset" class="danger" value="confirm">清除本機狀態</button>
     </form>
   </dialog>
-  <footer><p>只讀取網站內的公開旅程與介紹資料；不連線至私人來源、郵件、雲端硬碟或訂房服務。官方來源只在你點擊時於新分頁開啟；地圖頁僅在開啟時向 Leaflet、OpenStreetMap 請求公開地圖資源。</p></footer>
+  <footer><p>只讀取網站內的公開旅程與介紹資料；不連線至私人來源、郵件、雲端硬碟或訂房服務。官方來源只在你點擊時於新分頁開啟；地圖頁會請求公開地圖資源，每日行程頁會把所選日期的公開代表座標送往 Open-Meteo 取得預報，但不會傳送整份行程、住宿、訂位或其他私人資料。</p></footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin=""></script>
-  <script type="module" src="app.js?v=20260813-3"></script>
+  <script type="module" src="app.js?v=20260813-6"></script>
 </body>
 </html>

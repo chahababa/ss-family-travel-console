@@ -62,7 +62,17 @@ test('whole-artifact validator rejects literal and encoded sixth Drive folder UR
       `export const injected = 'https://${host}${path}';\n`,
       "export const injected = 'https:\\/\\/" + host + path + "';\n",
       "export const injected = 'https:\\u002f\\u002f" + host + path + "';\n",
+      "export const injected = 'https:\\u002F\\u002F" + host + path + "';\n",
+      "export const injected = 'https\\u003a\\u002f\\u002f" + host + path + "';\n",
+      "export const injected = 'https\\x3A\\x2F\\x2f" + host + path + "';\n",
+      "export const injected = 'https:\\u{2f}\\u{2F}" + host + path + "';\n",
+      "export const injected = '\\u0068ttps://" + host + path + "';\n",
+      "export const injected = '\\u{68}ttps\\u{3A}\\u{2f}\\u{2F}" + host + path + "';\n",
       `<a href="https${'&#58;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#58'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#x3a;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&colon;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#58;'}${'&#47;'}${'&#x2F;'}${host}${path}">fixture</a>\n`,
       "export const injected = 'https:\\x2f\\x2f" + host + path + "';\n",
     ];
     for (const injection of fixtures) {

@@ -21,7 +21,12 @@ EXPECTED = (
     ("活動／交通票券", "查看活動與交通票券分類。", "https://drive.google.com/drive/folders/1TzIF8enZ_mQ9TVQZGA2HGA-M-DA0ZRzQ"),
 )
 EXPECTED_URLS = {item[2] for item in EXPECTED}
+EXPECTED_FOLDER_IDS = {urlparse(url).path.rsplit("/", 1)[-1] for url in EXPECTED_URLS}
 COMPLETE_DRIVE_URL = re.compile(r"https://drive\.google\.com/[^\s\"'<>\]\[(){}]+", re.IGNORECASE)
+DRIVE_FOLDER_REFERENCE = re.compile(
+    r"drive\.google\.com/drive/folders/([A-Za-z0-9_-]+)",
+    re.IGNORECASE,
+)
 SENSITIVE = re.compile(
     "|".join((
         r"drive\.google\.com/(?:fi" + r"le/d|op" + r"en\?|u" + r"c\?)",
@@ -68,20 +73,30 @@ def tracked_texts() -> dict[str, str]:
 
 
 def normalize_executable_url_text(text: str) -> str:
+    def decode_ascii(match: re.Match[str]) -> str:
+        codepoint = int(next(group for group in match.groups() if group is not None), 16)
+        return chr(codepoint) if codepoint <= 0x7F else match.group(0)
+
     normalized = html.unescape(text)
-    normalized = re.sub(r"\\u0*03a|\\x3a", ":", normalized, flags=re.IGNORECASE)
-    normalized = re.sub(r"\\u0*02f|\\x2f", "/", normalized, flags=re.IGNORECASE)
+    normalized = re.sub(r"\\u\{([0-9a-fA-F]{1,6})\}|\\u([0-9a-fA-F]{4})|\\x([0-9a-fA-F]{2})", decode_ascii, normalized)
     return normalized.replace(r"\/", "/")
 
 
 def validate_whole_public_artifact() -> None:
     observed: set[str] = set()
+    observed_folder_ids: set[str] = set()
     for text in tracked_texts().values():
-        for match in COMPLETE_DRIVE_URL.findall(normalize_executable_url_text(text)):
+        normalized = normalize_executable_url_text(text)
+        for match in COMPLETE_DRIVE_URL.findall(normalized):
             observed.add(match.rstrip(".,;:!?"))
+        observed_folder_ids.update(DRIVE_FOLDER_REFERENCE.findall(normalized))
     require(
         observed == EXPECTED_URLS,
         "tracked public artifact must expose exactly the five approved Drive folder URLs",
+    )
+    require(
+        observed_folder_ids == EXPECTED_FOLDER_IDS,
+        "tracked public artifact contains an unapproved Drive folder identifier",
     )
 
 

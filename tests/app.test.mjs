@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stateLabel, isSafeMapsUrl, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel } from '../helpers.js';
+import { stateLabel, isSafeMapsUrl, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
 import { DailyWeatherController, WEATHER_CACHE_TTL_MS } from '../weather.js';
 
 test('state labels distinguish every source state', () => {
@@ -170,6 +170,46 @@ test('designated official itinerary is synchronized across all 11 days', async (
   assert.match(itinerary.get('2026-08-20'), /鬼押出園.*白絲瀑布.*Candle Night/s);
   const august22 = trip.dailyPlans.find((day) => day.date === '2026-08-22');
   assert.equal(august22.navigation.find((entry) => entry.label.includes('Ron Mueck')).state, 'candidate');
+});
+
+test('introduction quick navigation derives its exact count, order, hrefs, and candidate states from source items', async () => {
+  const { default: introductions } = await import('../data/introductions.json', { with: { type: 'json' } });
+  const entries = introductionQuickNavEntries(introductions.items);
+  assert.equal(entries.length, 12);
+  assert.deepEqual(entries.map((entry) => entry.id), introductions.items.map((item) => item.id));
+  assert.deepEqual(entries.map((entry) => entry.href), introductions.items.map((item) => `#intro-${item.id}`));
+  assert.ok(entries.every((entry) => entry.targetId === introductionTargetId(entry.id)));
+  assert.deepEqual(entries.filter((entry) => entry.state === 'candidate').map((entry) => entry.id), introductions.items.filter((item) => item.state === 'candidate').map((item) => item.id));
+});
+
+test('introduction renderer keeps one matching quick target and return anchor per source item', async () => {
+  const [source, { default: introductions }] = await Promise.all([
+    (await import('node:fs/promises')).readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    import('../data/introductions.json', { with: { type: 'json' } }),
+  ]);
+  assert.match(source, /function renderIntroductionQuickNav\(items\)/);
+  assert.match(source, /introductionQuickNavEntries\(items\)/);
+  assert.match(source, /id="intro-quick-nav"/);
+  assert.match(source, /aria-labelledby="intro-quick-nav-heading"/);
+  assert.match(source, /href="#intro-quick-nav" data-intro-return/);
+  assert.match(source, /id="intro-\$\{escapeHtml\(item\.id\)\}" tabindex="-1"/);
+  assert.match(source, /focusIntroductionHashTarget/);
+  assert.match(source, /window\.addEventListener\('hashchange', handleIntroductionHashNavigation\)/);
+  assert.match(source, /event\.target\.closest\('\[data-intro-target\], \[data-intro-return\]'\)/);
+  assert.doesNotMatch(source, /introLink\.preventDefault/);
+  assert.match(source, /introductions\.items\.some\(\(item\) => `intro-\$\{item\.id\}` === introductionHash\)/);
+  assert.equal(introductionQuickNavEntries(introductions.items).filter((entry) => entry.href.startsWith('#intro-')).length, introductions.items.length);
+});
+
+test('introduction quick navigation CSS keeps focus, scroll margins, responsive wrapping, and 44px targets', async () => {
+  const styles = await (await import('node:fs/promises')).readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(styles, /\.intro-quick-nav \{[^}]*scroll-margin-top:/);
+  assert.match(styles, /\.intro-card \{ scroll-margin-top:/);
+  assert.match(styles, /\.intro-card:focus, \.intro-quick-nav:focus \{ outline: 3px solid var\(--focus\)/);
+  assert.match(styles, /\.intro-quick-nav-list a \{[^}]*min-height: 44px/);
+  assert.match(styles, /grid-template-columns: repeat\(auto-fit, minmax\(16rem, 1fr\)\)/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.intro-quick-nav-list \{ grid-template-columns: 1fr; \}/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
 test('introduction snapshot covers the trip with safe official HTTPS sources', async () => {

@@ -9,6 +9,16 @@ export const isSafeMapsUrl = (value) => {
 
 export const storageKey = (section, id = '') => `ss-travel-console:v1:${section}${id ? `:${id}` : ''}`;
 
+// Introduction navigation derives both its labels and stable native targets from one source array.
+export const introductionTargetId = (id) => `intro-${id}`;
+export const introductionQuickNavEntries = (items = []) => items.map((item) => ({
+  id: item.id,
+  targetId: introductionTargetId(item.id),
+  href: `#${introductionTargetId(item.id)}`,
+  title: item.title,
+  state: item.state || null,
+}));
+
 export const hasValidMapLocation = (value) => Boolean(
   value && Number.isFinite(value.lat) && Number.isFinite(value.lng)
   && value.lat >= -90 && value.lat <= 90 && value.lng >= -180 && value.lng <= 180

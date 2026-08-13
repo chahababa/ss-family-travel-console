@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stateLabel, isSafeMapsUrl, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { cp, mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { stateLabel, isSafeMapsUrl, isSafeDriveFolderUrl, hasValidPrivateDocumentShortcuts, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
 import { DailyWeatherController, WEATHER_CACHE_TTL_MS } from '../weather.js';
 
 test('state labels distinguish every source state', () => {
@@ -14,6 +18,92 @@ test('only public Google Maps navigation URLs are accepted', () => {
   assert.equal(isSafeMapsUrl('https://www.google.com/maps/search/?api=1&query=Tokyo'), true);
   assert.equal(isSafeMapsUrl('https://example.com/maps'), false);
   assert.equal(isSafeMapsUrl('javascript:alert(1)'), false);
+});
+
+test('private document shortcuts accept only five approved Google Drive folder URLs', async () => {
+  const { default: config } = await import('../data/private-document-shortcuts.json', { with: { type: 'json' } });
+  assert.equal(config.shortcuts.length, 5);
+  assert.ok(hasValidPrivateDocumentShortcuts(config));
+  assert.ok(config.shortcuts.every((shortcut) => isSafeDriveFolderUrl(shortcut.url)));
+  assert.equal(hasValidPrivateDocumentShortcuts({ ...config, unexpected: 'metadata' }), false);
+  assert.equal(hasValidPrivateDocumentShortcuts({
+    ...config,
+    shortcuts: config.shortcuts.map((shortcut, index) => index ? shortcut : { ...shortcut, unexpected: 'metadata' }),
+  }), false);
+  assert.equal(hasValidPrivateDocumentShortcuts({
+    ...config,
+    shortcuts: config.shortcuts.map((shortcut, index) => index === 4 ? { ...shortcut, url: config.shortcuts[0].url } : shortcut),
+  }), false);
+  const arbitraryFolderUrl = ['https://drive.google.com', '/drive/folders/', 'synthetic-unapproved'].join('');
+  assert.equal(isSafeDriveFolderUrl(arbitraryFolderUrl), false);
+  assert.equal(hasValidPrivateDocumentShortcuts({
+    ...config,
+    shortcuts: config.shortcuts.map((shortcut, index) => index === 4 ? { ...shortcut, url: arbitraryFolderUrl } : shortcut),
+  }), false);
+  const individualFileUrl = ['https://drive.google.com', '/file', '/d/example'].join('');
+  const folderUrlWithQuery = ['https://drive.google.com', '/drive/folders', '/example', '?usp=', 'sharing'].join('');
+  assert.equal(isSafeDriveFolderUrl(individualFileUrl), false);
+  assert.equal(isSafeDriveFolderUrl(folderUrlWithQuery), false);
+  assert.equal(isSafeDriveFolderUrl(`https://name@${new URL(config.shortcuts[0].url).host}${new URL(config.shortcuts[0].url).pathname}`), false);
+  assert.equal(isSafeDriveFolderUrl('https://example.com/drive/folders/example'), false);
+});
+
+test('whole-artifact validator rejects literal and encoded sixth Drive folder URLs outside config', async () => {
+  const fixture = await mkdtemp(join(tmpdir(), 'ss-private-doc-validator-'));
+  try {
+    await mkdir(join(fixture, 'scripts'), { recursive: true });
+    await mkdir(join(fixture, 'data'), { recursive: true });
+    await cp(new URL('../scripts/validate-private-document-shortcuts.py', import.meta.url), join(fixture, 'scripts', 'validate-private-document-shortcuts.py'));
+    await cp(new URL('../data/private-document-shortcuts.json', import.meta.url), join(fixture, 'data', 'private-document-shortcuts.json'));
+    execFileSync('git', ['init', '--quiet'], { cwd: fixture });
+    const host = 'drive.google.com';
+    const path = '/drive/folders/synthetic-unapproved-sixth';
+    const fixtures = [
+      `export const injected = 'https://${host}${path}';\n`,
+      "export const injected = 'https:\\/\\/" + host + path + "';\n",
+      "export const injected = 'https:\\u002f\\u002f" + host + path + "';\n",
+      "export const injected = 'https:\\u002F\\u002F" + host + path + "';\n",
+      "export const injected = 'https\\u003a\\u002f\\u002f" + host + path + "';\n",
+      "export const injected = 'https\\x3A\\x2F\\x2f" + host + path + "';\n",
+      "export const injected = 'https:\\u{2f}\\u{2F}" + host + path + "';\n",
+      "export const injected = '\\u0068ttps://" + host + path + "';\n",
+      "export const injected = '\\u{68}ttps\\u{3A}\\u{2f}\\u{2F}" + host + path + "';\n",
+      `<a href="https${'&#58;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#58'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#x3a;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&colon;'}//${host}${path}">fixture</a>\n`,
+      `<a href="https${'&#58;'}${'&#47;'}${'&#x2F;'}${host}${path}">fixture</a>\n`,
+      "export const injected = 'https:\\x2f\\x2f" + host + path + "';\n",
+    ];
+    for (const injection of fixtures) {
+      await writeFile(join(fixture, 'injected-source.html'), injection);
+      execFileSync('git', ['add', '.'], { cwd: fixture });
+      const result = spawnSync('python3', ['scripts/validate-private-document-shortcuts.py'], { cwd: fixture, encoding: 'utf8' });
+      assert.notEqual(result.status, 0, `validator unexpectedly accepted ${injection}`);
+      assert.match(result.stderr, /tracked public artifact must expose exactly the five approved Drive folder URLs/);
+    }
+  } finally {
+    await rm(fixture, { recursive: true, force: true });
+  }
+});
+
+test('private document renderer keeps public-risk notice, safe external-link attributes, and 44px targets', async () => {
+  const fs = await import('node:fs/promises');
+  const [source, styles, markup] = await Promise.all([
+    fs.readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../styles.css', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../index.html', import.meta.url), 'utf8'),
+  ]);
+  assert.match(source, /function renderPrivateDocuments\(\)/);
+  assert.match(source, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(source, /已獲授權的 Google 帳號登入/);
+  assert.match(source, /請勿轉傳/);
+  assert.match(source, /住宿資料夾可能含取消紀錄；請以最新 Notion／確認信為準/);
+  assert.match(source, /私人文件捷徑暫時無法載入；原行程內容不受影響/);
+  assert.match(markup, /data-view="documents">私人文件捷徑/);
+  assert.match(markup, /styles\.css\?v=20260813-8/);
+  assert.match(styles, /\.document-shortcut-card \.button-link \{ width: 100%/);
+  assert.match(styles, /button, \.button-link \{[\s\S]*min-height: 44px/);
 });
 
 test('local state keys stay namespaced and stable', () => {

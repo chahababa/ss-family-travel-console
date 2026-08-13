@@ -6,7 +6,7 @@
   "description": "Public, read-only family travel reference",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "validate": "python3 -m json.tool data/trip-data.json >/dev/null && python3 -m json.tool data/introductions.json >/dev/null && python3 -m json.tool data/weather-locations.json >/dev/null && scripts/verify-public-safety.sh && python3 scripts/validate-trip-data.py && python3 scripts/validate-introductions.py && python3 scripts/validate-weather-locations.py",
+    "validate": "python3 -m json.tool data/trip-data.json >/dev/null && python3 -m json.tool data/introductions.json >/dev/null && python3 -m json.tool data/weather-locations.json >/dev/null && python3 -m json.tool data/private-document-shortcuts.json >/dev/null && scripts/verify-public-safety.sh && python3 scripts/validate-trip-data.py && python3 scripts/validate-introductions.py && python3 scripts/validate-weather-locations.py && python3 scripts/validate-private-document-shortcuts.py",
     "serve": "python3 -m http.server 4173 --bind 127.0.0.1"
   },
   "engines": {

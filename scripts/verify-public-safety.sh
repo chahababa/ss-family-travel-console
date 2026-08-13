@@ -13,6 +13,7 @@ TARGETS=(
   "$ROOT/data/trip-data.json"
   "$ROOT/data/introductions.json"
   "$ROOT/data/weather-locations.json"
+  "$ROOT/data/private-document-shortcuts.json"
   "$ROOT/scripts/validate-trip-data.py"
   "$ROOT/scripts/validate-weather-locations.py"
   "$ROOT/scripts/validate-introductions.py"
@@ -30,7 +31,7 @@ check_absent() {
   fi
 }
 
-check_absent 'private-system reference' '(Notion|Gmail|Google Drive|drive\.google\.com)'
+check_absent 'private-system reference outside approved Drive folder shortcuts' '(Gmail|drive\.google\.com/file/d/|drive\.google\.com/open\?|drive\.google\.com/uc\?)'
 check_absent 'UUID-like internal identifier' '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 check_absent 'credential-shaped value' '(gho_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|ntn_[A-Za-z0-9_-]{12,}|secret_[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|BEGIN [A-Z ]*PRIVATE KEY)'
 check_absent 'reservation or payment identifier' '(booking|reservation|confirmation)[[:space:]_-]*(ref(erence)?|code|number|no)?[[:space:]]*[:#=][[:space:]]*[A-Z0-9]{6,}|([0-9]{4}[- ][0-9]{4}[- ][0-9]{4}[- ][0-9]{4}|[0-9]{13,19})'

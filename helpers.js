@@ -16,10 +16,17 @@ export const isSafeDriveFolderUrl = (value) => {
   } catch { return false; }
 };
 
+const hasExactKeys = (value, expected) => value && typeof value === 'object'
+  && !Array.isArray(value)
+  && Object.keys(value).length === expected.length
+  && expected.every((key) => Object.hasOwn(value, key));
+
 export const hasValidPrivateDocumentShortcuts = (config) => Boolean(
-  config && config.schemaVersion === '1.0.0' && Array.isArray(config.shortcuts)
+  hasExactKeys(config, ['schemaVersion', 'shortcuts'])
+  && config.schemaVersion === '1.0.0' && Array.isArray(config.shortcuts)
   && config.shortcuts.length === 5
-  && config.shortcuts.every((shortcut) => shortcut && typeof shortcut.label === 'string' && shortcut.label.trim()
+  && config.shortcuts.every((shortcut) => hasExactKeys(shortcut, ['label', 'description', 'url'])
+    && typeof shortcut.label === 'string' && shortcut.label.trim()
     && typeof shortcut.description === 'string' && shortcut.description.trim()
     && isSafeDriveFolderUrl(shortcut.url))
 );

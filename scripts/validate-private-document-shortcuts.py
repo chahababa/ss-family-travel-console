@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -18,6 +19,8 @@ EXPECTED = (
     ("租車", "查看租車相關分類。", "https://drive.google.com/drive/folders/1QA46EnxcPuEuy7RcNo0uw2wFLAJbZ-v4"),
     ("活動／交通票券", "查看活動與交通票券分類。", "https://drive.google.com/drive/folders/1TzIF8enZ_mQ9TVQZGA2HGA-M-DA0ZRzQ"),
 )
+EXPECTED_URLS = {item[2] for item in EXPECTED}
+COMPLETE_DRIVE_URL = re.compile(r"https://drive\.google\.com/[^\s\"'<>\]\[(){}]+", re.IGNORECASE)
 SENSITIVE = re.compile(
     "|".join((
         r"drive\.google\.com/(?:fi" + r"le/d|op" + r"en\?|u" + r"c\?)",
@@ -49,6 +52,31 @@ def is_folder_url(value: object) -> bool:
     )
 
 
+def tracked_texts() -> dict[str, str]:
+    texts: dict[str, str] = {}
+    tracked = subprocess.check_output(
+        ["git", "-C", str(ROOT), "ls-files"],
+        text=True,
+    ).splitlines()
+    for relative in tracked:
+        try:
+            texts[relative] = (ROOT / relative).read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+    return texts
+
+
+def validate_whole_public_artifact() -> None:
+    observed: set[str] = set()
+    for text in tracked_texts().values():
+        for match in COMPLETE_DRIVE_URL.findall(text):
+            observed.add(match.rstrip(".,;:!?"))
+    require(
+        observed == EXPECTED_URLS,
+        "tracked public artifact must expose exactly the five approved Drive folder URLs",
+    )
+
+
 def main() -> int:
     data = json.loads(PATH.read_text(encoding="utf-8"))
     require(set(data) == {"schemaVersion", "shortcuts"}, "shortcut config contains unapproved metadata")
@@ -66,7 +94,8 @@ def main() -> int:
         actual.append((shortcut["label"], shortcut["description"], shortcut["url"]))
 
     require(tuple(actual) == EXPECTED, "shortcut config does not exactly match the user-approved folder allowlist")
-    print("PRIVATE DOCUMENT SHORTCUTS CHECK PASSED: five approved Google Drive folder URLs only; no file URLs or sensitive identifier patterns.")
+    validate_whole_public_artifact()
+    print("PRIVATE DOCUMENT SHORTCUTS CHECK PASSED: whole tracked artifact exposes only the five approved Google Drive folder URLs; no file URLs or sensitive identifier patterns.")
     return 0
 
 

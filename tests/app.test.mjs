@@ -101,9 +101,30 @@ test('private document renderer keeps public-risk notice, safe external-link att
   assert.match(source, /住宿資料夾可能含取消紀錄；請以最新 Notion／確認信為準/);
   assert.match(source, /私人文件捷徑暫時無法載入；原行程內容不受影響/);
   assert.match(markup, /data-view="documents">私人文件捷徑/);
-  assert.match(markup, /styles\.css\?v=20260813-8/);
+  assert.match(markup, /styles\.css\?v=20260813-9/);
   assert.match(styles, /\.document-shortcut-card \.button-link \{ width: 100%/);
   assert.match(styles, /button, \.button-link \{[\s\S]*min-height: 44px/);
+});
+
+test('button system keeps every button variant in the orange palette with accessible states', async () => {
+  const fs = await import('node:fs/promises');
+  const [styles, markup] = await Promise.all([
+    fs.readFile(new URL('../styles.css', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../index.html', import.meta.url), 'utf8'),
+  ]);
+  assert.match(styles, /--button: #[0-9a-f]{6};/i);
+  assert.match(styles, /--button-hover: #[0-9a-f]{6};/i);
+  assert.match(styles, /--button-active: #[0-9a-f]{6};/i);
+  assert.match(styles, /--button-danger: #[0-9a-f]{6};/i);
+  assert.match(styles, /button, \.button-link \{[\s\S]*min-height: 44px;[\s\S]*border: 1px solid var\(--button\);[\s\S]*background: var\(--button\);/);
+  assert.match(styles, /button:hover:not\(:disabled\), \.button-link:hover:not\(\[aria-disabled="true"\]\) \{ background: var\(--button-hover\); \}/);
+  assert.match(styles, /button:active:not\(:disabled\), \.button-link:active:not\(\[aria-disabled="true"\]\) \{ background: var\(--button-active\); \}/);
+  assert.match(styles, /\.primary-nav button \{[\s\S]*min-height: 44px;[\s\S]*color: #fff;[\s\S]*background: var\(--button\); \}/);
+  assert.match(styles, /\.primary-nav button\[aria-current="page"\] \{[\s\S]*background: var\(--button-active\); \}/);
+  assert.match(styles, /button:disabled, \.button-link\[aria-disabled="true"\] \{[\s\S]*cursor: not-allowed;[\s\S]*background: var\(--button-disabled\);/);
+  assert.match(styles, /\.danger \{ border-color: var\(--button-danger\); background: var\(--button-danger\); \}/);
+  assert.match(styles, /button:focus-visible, \.button-link:focus-visible, a:focus-visible/);
+  assert.match(markup, /styles\.css\?v=20260813-9/);
 });
 
 test('local state keys stay namespaced and stable', () => {

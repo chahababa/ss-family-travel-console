@@ -1,4 +1,4 @@
-import { isSafeMapsUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, weatherCodeLabel } from './helpers.js?v=20260813-6';
+import { isSafeMapsUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, weatherCodeLabel, introductionQuickNavEntries } from './helpers.js?v=20260813-7';
 import { DailyWeatherController } from './weather.js?v=20260813-2';
 
 const app = document.querySelector('#app-content');
@@ -125,9 +125,24 @@ function introductionPhoto(photo) {
     <figcaption>${escapeHtml(photo.caption)}<span class="photo-credit">照片：${escapeHtml(photo.creator)}，${escapeHtml(photo.license)}；本站版本經 16:9 裁切與 WebP 壓縮｜<a href="${escapeHtml(photo.licenseUrl)}" target="_blank" rel="noopener noreferrer">授權條款<span class="sr-only">（在新分頁開啟）</span></a>｜<a href="${escapeHtml(photo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons 來源<span class="sr-only">（在新分頁開啟）</span></a></span></figcaption>
   </figure>`;
 }
+function focusIntroductionHashTarget() {
+  if (activeView !== 'introductions' || !window.location.hash) return false;
+  const target = document.getElementById(window.location.hash.slice(1));
+  if (!target || !target.matches('.intro-card, #intro-quick-nav')) return false;
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ block: 'start', behavior: 'auto' });
+  return true;
+}
+function renderIntroductionQuickNav(items) {
+  const entries = introductionQuickNavEntries(items);
+  return `<nav id="intro-quick-nav" class="intro-quick-nav" aria-labelledby="intro-quick-nav-heading" tabindex="-1">
+    <h3 id="intro-quick-nav-heading">快速前往行程介紹</h3>
+    <ol class="intro-quick-nav-list">${entries.map((entry) => `<li><a href="${escapeHtml(entry.href)}" data-intro-target="${escapeHtml(entry.targetId)}"><span>${escapeHtml(entry.title)}</span>${entry.state === 'candidate' ? status(entry.state) : ''}</a></li>`).join('')}</ol>
+  </nav>`;
+}
 function renderIntroductions() {
   const items = introductionData?.items || [];
-  const cards = items.map((item) => `<article class="card intro-card" id="intro-${escapeHtml(item.id)}">
+  const cards = items.map((item) => `<article class="card intro-card" id="intro-${escapeHtml(item.id)}" tabindex="-1">
     <div class="intro-meta"><span class="intro-category">${escapeHtml(item.category)}</span><span>${escapeHtml(item.area)}</span>${item.state ? status(item.state) : ''}</div>
     ${introductionPhoto(item.photo)}
     <h3>${escapeHtml(item.title)}</h3>
@@ -139,8 +154,10 @@ function renderIntroductions() {
       <section class="family-tip"><h4>家庭看點</h4><p>${escapeHtml(item.familyTip)}</p></section>
     </div>
     <details><summary>查看官方來源</summary>${introductionSourceLinks(item.sources)}</details>
+    <a class="intro-return-link" href="#intro-quick-nav" data-intro-return>回到快速導覽</a>
   </article>`).join('');
   return `<section class="view" aria-labelledby="view-title">${heading('行程介紹', '把想去的地點放回特色、歷史與家庭旅行脈絡；內容依官方公開資料整理。')}
+    ${renderIntroductionQuickNav(items)}
     <aside class="notice intro-note"><strong>閱讀方式：</strong>${escapeHtml(introductionData?.note || '營業與活動資訊請以出發前官方公告為準。')}</aside>
     <div class="intro-grid">${cards || '<p class="empty">目前沒有行程介紹</p>'}</div>
   </section>`;
@@ -251,6 +268,7 @@ function render() {
   app.innerHTML = renderers[activeView]();
   nav.querySelectorAll('button').forEach((button) => button.setAttribute('aria-current', button.dataset.view === activeView ? 'page' : 'false'));
   const title = app.querySelector('h2'); if (title) title.focus();
+  if (activeView === 'introductions') focusIntroductionHashTarget();
   showStorageNotice();
   if (activeView === 'links') updateLinkCount(allNavigation());
   if (activeView === 'map') initMap();
@@ -259,6 +277,9 @@ function render() {
 }
 function updateLinkCount(links) { const count = document.querySelector('#link-count'); if (count) count.textContent = `共 ${links.length} 個公開導航連結`; }
 function switchView(view, trigger) { activeView = view; lastTrigger = trigger; writeLocal('view', view); render(); }
+function handleIntroductionHashNavigation() {
+  if (activeView === 'introductions') focusIntroductionHashTarget();
+}
 function exportState() {
   const state = { version: 1, checklist: tripData.checklist.filter(isChecklistDone).map(checklistId), pins: tripData.saves.filter((save) => isPinned(saveId(save))).map(saveId) };
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'ss-travel-console-local-state.json'; link.click(); URL.revokeObjectURL(url);
@@ -278,6 +299,8 @@ app.addEventListener('error', (event) => {
   figure.querySelector('.intro-photo-fallback')?.removeAttribute('hidden');
 }, true);
 app.addEventListener('click', (event) => {
+  const introLink = event.target.closest('[data-intro-target], [data-intro-return]');
+  if (introLink) window.setTimeout(handleIntroductionHashNavigation, 0);
   const go = event.target.closest('[data-go]'); if (go) return switchView(go.dataset.go, go);
   const weatherRetry = event.target.closest('[data-weather-retry]'); if (weatherRetry) { weatherController.retry(); return; }
   const dayButton = event.target.closest('[data-day]'); if (dayButton) { const day = tripData.dailyPlans[Number(dayButton.dataset.day)]; if (day) { selectedDate = day.date; writeLocal('date', selectedDate); render(); } return; }
@@ -292,6 +315,7 @@ app.addEventListener('change', (event) => {
 });
 app.addEventListener('input', (event) => { if (event.target.id === 'link-filter') { const query = event.target.value.toLowerCase(); const links = allNavigation().filter((link) => `${link.date} ${link.cityArea} ${link.label} ${stateLabel(link.state)}`.toLowerCase().includes(query)); document.querySelector('#links-list').innerHTML = linkCards(links); updateLinkCount(links); } });
 resetDialog.addEventListener('close', () => { if (resetDialog.returnValue === 'confirm') clearLocalState(); else lastTrigger?.focus(); });
+window.addEventListener('hashchange', handleIntroductionHashNavigation);
 retryButton.addEventListener('click', () => loadData());
 async function loadData() {
   errorPanel.classList.add('hidden');
@@ -312,6 +336,8 @@ async function loadData() {
     weatherLocations = weatherConfigIssue ? new Map() : new Map(weatherConfig.locations.map((location) => [location.date, location]));
     tripData = data;
     introductionData = introductions;
+    const introductionHash = window.location.hash.slice(1);
+    if (introductionHash === 'intro-quick-nav' || introductions.items.some((item) => `intro-${item.id}` === introductionHash)) activeView = 'introductions';
     document.querySelector('#app-title').textContent = data.trip.title;
     document.querySelector('#trip-range').textContent = `${formatDate(data.trip.dateRange.start)} 至 ${formatDate(data.trip.dateRange.end)}｜公開唯讀參考`;
     render();

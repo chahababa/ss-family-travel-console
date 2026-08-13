@@ -17,6 +17,7 @@
   </header>
   <nav class="primary-nav" aria-label="主要功能">
     <button type="button" data-view="overview" aria-current="page">總覽</button>
+    <button type="button" data-view="documents">私人文件捷徑</button>
     <button type="button" data-view="daily">每日行程</button>
     <button type="button" data-view="introductions">行程介紹</button>
     <button type="button" data-view="links">旅程連結</button>
@@ -41,8 +42,8 @@
       <button id="confirm-reset" class="danger" value="confirm">清除本機狀態</button>
     </form>
   </dialog>
-  <footer><p>只讀取網站內的公開旅程與介紹資料；不連線至私人來源、郵件、雲端硬碟或訂房服務。官方來源只在你點擊時於新分頁開啟；地圖頁會請求公開地圖資源，每日行程頁會把所選日期的公開代表座標送往 Open-Meteo 取得預報，但不會傳送整份行程、住宿、訂位或其他私人資料。</p></footer>
+  <footer><p>本站為公開網站。私人文件捷徑只在你點擊時於新分頁前往 Google Drive，且須使用已獲授權的 Google 帳號登入；請勿轉傳連結或內容。住宿資料夾可能含取消紀錄，請以最新 Notion／確認信為準。除此之外，本站只讀取公開旅程與介紹資料；地圖頁會請求公開地圖資源，每日行程頁會把所選日期的公開代表座標送往 Open-Meteo 取得預報，但不會傳送整份行程、住宿、訂位或其他私人資料。</p></footer>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin=""></script>
-  <script type="module" src="app.js?v=20260813-7"></script>
+  <script type="module" src="app.js?v=20260813-8"></script>
 </body>
 </html>

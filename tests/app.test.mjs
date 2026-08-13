@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { stateLabel, isSafeMapsUrl, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
+import { stateLabel, isSafeMapsUrl, isSafeDriveFolderUrl, hasValidPrivateDocumentShortcuts, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
 import { DailyWeatherController, WEATHER_CACHE_TTL_MS } from '../weather.js';
 
 test('state labels distinguish every source state', () => {
@@ -14,6 +14,36 @@ test('only public Google Maps navigation URLs are accepted', () => {
   assert.equal(isSafeMapsUrl('https://www.google.com/maps/search/?api=1&query=Tokyo'), true);
   assert.equal(isSafeMapsUrl('https://example.com/maps'), false);
   assert.equal(isSafeMapsUrl('javascript:alert(1)'), false);
+});
+
+test('private document shortcuts accept only five approved Google Drive folder URLs', async () => {
+  const { default: config } = await import('../data/private-document-shortcuts.json', { with: { type: 'json' } });
+  assert.equal(config.shortcuts.length, 5);
+  assert.ok(hasValidPrivateDocumentShortcuts(config));
+  assert.ok(config.shortcuts.every((shortcut) => isSafeDriveFolderUrl(shortcut.url)));
+  const individualFileUrl = ['https://drive.google.com', '/file', '/d/example'].join('');
+  const folderUrlWithQuery = ['https://drive.google.com', '/drive/folders', '/example', '?usp=', 'sharing'].join('');
+  assert.equal(isSafeDriveFolderUrl(individualFileUrl), false);
+  assert.equal(isSafeDriveFolderUrl(folderUrlWithQuery), false);
+  assert.equal(isSafeDriveFolderUrl('https://example.com/drive/folders/example'), false);
+});
+
+test('private document renderer keeps public-risk notice, safe external-link attributes, and 44px targets', async () => {
+  const fs = await import('node:fs/promises');
+  const [source, styles, markup] = await Promise.all([
+    fs.readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../styles.css', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../index.html', import.meta.url), 'utf8'),
+  ]);
+  assert.match(source, /function renderPrivateDocuments\(\)/);
+  assert.match(source, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(source, /已獲授權的 Google 帳號登入/);
+  assert.match(source, /請勿轉傳/);
+  assert.match(source, /住宿資料夾可能含取消紀錄；請以最新 Notion／確認信為準/);
+  assert.match(source, /私人文件捷徑暫時無法載入；原行程內容不受影響/);
+  assert.match(markup, /data-view="documents">私人文件捷徑/);
+  assert.match(styles, /\.document-shortcut-card \.button-link \{ width: 100%/);
+  assert.match(styles, /button, \.button-link \{[\s\S]*min-height: 44px/);
 });
 
 test('local state keys stay namespaced and stable', () => {

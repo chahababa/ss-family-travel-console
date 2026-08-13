@@ -1,4 +1,4 @@
-import { isSafeMapsUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, weatherCodeLabel, introductionQuickNavEntries } from './helpers.js?v=20260813-7';
+import { isSafeMapsUrl, isSafeDriveFolderUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, hasValidPrivateDocumentShortcuts, weatherCodeLabel, introductionQuickNavEntries } from './helpers.js?v=20260813-8';
 import { DailyWeatherController } from './weather.js?v=20260813-2';
 
 const app = document.querySelector('#app-content');
@@ -9,6 +9,7 @@ const storageNotice = document.querySelector('#storage-notice');
 const nav = document.querySelector('.primary-nav');
 let tripData;
 let introductionData;
+let privateDocumentShortcuts;
 let weatherLocations = new Map();
 let weatherConfigIssue = false;
 let weatherState = { status: 'idle' };
@@ -99,6 +100,22 @@ function renderOverview() {
     </div>
     <section class="card"><h3>行程路線</h3><ol class="route">${tripData.dailyPlans.map((day) => `<li><strong>${formatDate(day.date)}</strong>｜${escapeHtml(day.cityArea)} ${status(day.state)}</li>`).join('')}</ol></section>
     <section class="card"><h3>狀態摘要</h3><p>${status('confirmed')} ${count('confirmed')} 天　${status('candidate')} 導航與活動依條件調整　${status('backup')} 僅作備用　${status('pending')} ${pending} 項待確認</p></section>
+  </section>`;
+}
+function renderPrivateDocuments() {
+  const shortcuts = privateDocumentShortcuts?.shortcuts || [];
+  if (!shortcuts.length) return `<section class="view" aria-labelledby="view-title">${heading('私人文件捷徑', '這是公開網站；以下捷徑會前往 Google Drive。')}<p class="empty" role="status">私人文件捷徑暫時無法載入；原行程內容不受影響。</p></section>`;
+  const cards = shortcuts.map((shortcut) => `<article class="document-shortcut-card">
+    <h3>${escapeHtml(shortcut.label)}</h3>
+    <p>${escapeHtml(shortcut.description)}</p>
+    ${isSafeDriveFolderUrl(shortcut.url) ? `<a class="button-link" href="${escapeHtml(shortcut.url)}" target="_blank" rel="noopener noreferrer">在 Google Drive 開啟<span class="sr-only">：${escapeHtml(shortcut.label)}</span></a>` : '<p class="source">此捷徑暫時不可用</p>'}
+  </article>`).join('');
+  return `<section class="view" aria-labelledby="view-title">${heading('私人文件捷徑', '這是公開網站；以下捷徑會前往 Google Drive。')}
+    <aside class="notice document-shortcuts-notice" aria-labelledby="document-shortcuts-notice-title">
+      <h3 id="document-shortcuts-notice-title">使用前請確認</h3>
+      <ul class="list"><li>請使用已獲授權的 Google 帳號登入。</li><li>請勿轉傳這些連結或其中內容。</li><li>住宿資料夾可能含取消紀錄；請以最新 Notion／確認信為準。</li></ul>
+    </aside>
+    <div class="document-shortcuts-grid">${cards}</div>
   </section>`;
 }
 function dayPicker() {
@@ -263,7 +280,7 @@ function checklistCards(items) {
 function render() {
   if (!tripData) return;
   if (!selectedDate || !tripData.dailyPlans.some((day) => day.date === selectedDate)) selectedDate = tripData.dailyPlans[0].date;
-  const renderers = { overview: renderOverview, daily: renderDaily, introductions: renderIntroductions, links: renderLinks, map: renderMap, saves: renderSaves, checklist: renderChecklist };
+  const renderers = { overview: renderOverview, documents: renderPrivateDocuments, daily: renderDaily, introductions: renderIntroductions, links: renderLinks, map: renderMap, saves: renderSaves, checklist: renderChecklist };
   if (!renderers[activeView]) activeView = 'overview';
   app.innerHTML = renderers[activeView]();
   nav.querySelectorAll('button').forEach((button) => button.setAttribute('aria-current', button.dataset.view === activeView ? 'page' : 'false'));
@@ -320,22 +337,25 @@ retryButton.addEventListener('click', () => loadData());
 async function loadData() {
   errorPanel.classList.add('hidden');
   try {
-    const [tripResponse, introResponse, weatherResponse] = await Promise.all([
+    const [tripResponse, introResponse, weatherResponse, documentResponse] = await Promise.all([
       fetch('./data/trip-data.json', { cache: 'no-store' }),
       fetch('./data/introductions.json', { cache: 'no-store' }),
-      fetch('./data/weather-locations.json', { cache: 'no-store' }).catch(() => null)
+      fetch('./data/weather-locations.json', { cache: 'no-store' }).catch(() => null),
+      fetch('./data/private-document-shortcuts.json', { cache: 'no-store' }).catch(() => null)
     ]);
     if (!tripResponse.ok || !introResponse.ok) throw new Error('data request failed');
-    const [data, introductions] = await Promise.all([
+    const [data, introductions, weatherConfig, documentShortcuts] = await Promise.all([
       tripResponse.json(),
-      introResponse.json()
+      introResponse.json(),
+      weatherResponse?.ok ? weatherResponse.json().catch(() => null) : null,
+      documentResponse?.ok ? documentResponse.json().catch(() => null) : null,
     ]);
-    const weatherConfig = weatherResponse?.ok ? await weatherResponse.json().catch(() => null) : null;
     if (!Array.isArray(data.dailyPlans) || !data.trip || !Array.isArray(introductions.items)) throw new Error('invalid data');
     weatherConfigIssue = !hasValidWeatherConfig(weatherConfig, data.dailyPlans.map((day) => day.date));
     weatherLocations = weatherConfigIssue ? new Map() : new Map(weatherConfig.locations.map((location) => [location.date, location]));
     tripData = data;
     introductionData = introductions;
+    privateDocumentShortcuts = hasValidPrivateDocumentShortcuts(documentShortcuts) ? documentShortcuts : null;
     const introductionHash = window.location.hash.slice(1);
     if (introductionHash === 'intro-quick-nav' || introductions.items.some((item) => `intro-${item.id}` === introductionHash)) activeView = 'introductions';
     document.querySelector('#app-title').textContent = data.trip.title;

@@ -7,6 +7,23 @@ export const isSafeMapsUrl = (value) => {
   } catch { return false; }
 };
 
+export const isSafeDriveFolderUrl = (value) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname === 'drive.google.com'
+      && /^\/drive\/folders\/[A-Za-z0-9_-]+$/.test(url.pathname)
+      && !url.search && !url.hash;
+  } catch { return false; }
+};
+
+export const hasValidPrivateDocumentShortcuts = (config) => Boolean(
+  config && config.schemaVersion === '1.0.0' && Array.isArray(config.shortcuts)
+  && config.shortcuts.length === 5
+  && config.shortcuts.every((shortcut) => shortcut && typeof shortcut.label === 'string' && shortcut.label.trim()
+    && typeof shortcut.description === 'string' && shortcut.description.trim()
+    && isSafeDriveFolderUrl(shortcut.url))
+);
+
 export const storageKey = (section, id = '') => `ss-travel-console:v1:${section}${id ? `:${id}` : ''}`;
 
 // Introduction navigation derives both its labels and stable native targets from one source array.

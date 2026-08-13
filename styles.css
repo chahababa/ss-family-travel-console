@@ -125,6 +125,11 @@ p { margin: .35rem 0; }
 .filter-row input { flex: 1 1 17rem; }
 .filter-row p { margin-bottom: .6rem; }
 .empty { margin: 0; border-left: .3rem solid var(--brand); padding: .75rem; color: var(--brand-dark); background: #e8f4f5; }
+.document-shortcuts-notice { margin: 0; }
+.document-shortcuts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1rem; }
+.document-shortcut-card { display: grid; align-content: start; gap: .65rem; min-width: 0; border: 1px solid #a7c0c9; border-radius: 1rem; padding: 1rem; background: var(--surface); box-shadow: 0 3px 12px rgba(22, 44, 76, .06); }
+.document-shortcut-card h3, .document-shortcut-card p { margin: 0; }
+.document-shortcut-card .button-link { width: 100%; margin-top: .15rem; }
 .weather-panel { border: 1px solid #aac7d0; border-radius: 1rem; padding: 1rem; color: var(--ink); background: #f2f9fa; box-shadow: 0 3px 12px rgba(22, 44, 76, .06); }
 .weather-panel h3 { color: var(--brand-dark); }
 .weather-area, .weather-fetched, .weather-source { color: var(--muted); font-size: .9rem; }

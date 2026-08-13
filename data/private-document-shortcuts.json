@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "1.0.0",
+  "shortcuts": [
+    {
+      "label": "旅程資料總覽",
+      "description": "查看整體訂票與憑證分類。",
+      "url": "https://drive.google.com/drive/folders/1Vb20JQC1-UUqdad0n9Qhlq1ydvM71nb5"
+    },
+    {
+      "label": "機票",
+      "description": "查看航班相關分類。",
+      "url": "https://drive.google.com/drive/folders/1kNWR0Yuf2_wcqAFTK0HQESRdqdc-imKi"
+    },
+    {
+      "label": "住宿（Agoda／飯店）",
+      "description": "查看住宿相關分類。",
+      "url": "https://drive.google.com/drive/folders/1yUYqMIAUxxuFFkgWNi-wN_ZFrrMe2AwB"
+    },
+    {
+      "label": "租車",
+      "description": "查看租車相關分類。",
+      "url": "https://drive.google.com/drive/folders/1QA46EnxcPuEuy7RcNo0uw2wFLAJbZ-v4"
+    },
+    {
+      "label": "活動／交通票券",
+      "description": "查看活動與交通票券分類。",
+      "url": "https://drive.google.com/drive/folders/1TzIF8enZ_mQ9TVQZGA2HGA-M-DA0ZRzQ"
+    }
+  ]
+}

@@ -149,6 +149,7 @@ test('weather config exactly covers all 11 public dates and has no private metad
   ]);
   assert.equal(config.locations.length, 11);
   assert.ok(hasValidWeatherConfig(config, trip.dailyPlans.map((day) => day.date)));
+  assert.deepEqual(config.locations[2], { date: '2026-08-15', locationLabel: '澀谷（跨區日代表地區）', lat: 35.6627409, lng: 139.7018185 });
   assert.deepEqual(config.locations[6], { date: '2026-08-19', locationLabel: '輕井澤（跨區日代表地區）', lat: 36.3391616, lng: 138.6331098 });
   assert.ok(config.locations.every((location) => Object.keys(location).sort().join(',') === 'date,lat,lng,locationLabel'));
 });
@@ -261,7 +262,7 @@ test('daily weather renderer contract keeps accessible state panels, safe source
 test('travel snapshot supplies a valid map location for every public navigation entry', async () => {
   const { default: trip } = await import('../data/trip-data.json', { with: { type: 'json' } });
   const navigation = trip.dailyPlans.flatMap((day) => day.navigation);
-  assert.equal(navigation.length, 26);
+  assert.equal(navigation.length, 28);
   assert.ok(navigation.every((entry) => hasValidMapLocation(entry.mapLocation)));
 });
 
@@ -274,7 +275,12 @@ test('designated official itinerary is synchronized across all 11 days', async (
     Array.from({ length: 11 }, (_, index) => `2026-08-${String(13 + index).padStart(2, '0')}`),
   );
   const itinerary = new Map(trip.dailyPlans.map((day) => [day.date, day.highLevelItinerary.join('｜')]));
-  assert.match(itinerary.get('2026-08-15'), /木更津港祭煙火大會/);
+  assert.match(itinerary.get('2026-08-15'), /Hender Scheme.*HANDS 澀谷店.*森美術館.*歌舞伎町 BON ODORI/s);
+  assert.doesNotMatch(itinerary.get('2026-08-15'), /木更津|WACKO MARIA/);
+  const august15 = trip.dailyPlans.find((day) => day.date === '2026-08-15');
+  assert.equal(august15.navigation.length, 4);
+  assert.match(august15.highLevelItinerary.join('｜'), /U\.F\.O \/ mar → BON ODORI → 森美術館 → HANDS/);
+  assert.match(august15.highLevelItinerary.join('｜'), /延誤調整：先縮短 HANDS，其次縮短森美術館/);
   assert.match(itinerary.get('2026-08-17'), /八ッ場水壩/);
   assert.match(itinerary.get('2026-08-18'), /四萬甌穴群/);
   assert.match(itinerary.get('2026-08-19'), /奧四萬湖.*伊香保溫泉石段街.*碓冰峠眼鏡橋/s);
@@ -286,7 +292,7 @@ test('designated official itinerary is synchronized across all 11 days', async (
 test('introduction quick navigation derives its exact count, order, hrefs, and candidate states from source items', async () => {
   const { default: introductions } = await import('../data/introductions.json', { with: { type: 'json' } });
   const entries = introductionQuickNavEntries(introductions.items);
-  assert.equal(entries.length, 13);
+  assert.equal(entries.length, 14);
   assert.deepEqual(entries.map((entry) => entry.id), introductions.items.map((item) => item.id));
   assert.deepEqual(entries.map((entry) => entry.href), introductions.items.map((item) => `#intro-${item.id}`));
   assert.ok(entries.every((entry) => entry.targetId === introductionTargetId(entry.id)));
@@ -300,12 +306,15 @@ test('daily itinerary introduction links resolve exact official items to safe in
   ]);
   const itemIds = new Set(introductions.items.map((item) => item.id));
   const officialItems = new Set(trip.dailyPlans.flatMap((day) => day.highLevelItinerary.map((label) => `${day.date}|${label}`)));
-  assert.equal(introductions.dailyItineraryLinks.length, 26);
+  assert.equal(introductions.dailyItineraryLinks.length, 27);
   assert.ok(introductions.dailyItineraryLinks.every((link) => itemIds.has(link.introductionId)));
   assert.ok(introductions.dailyItineraryLinks.every((link) => officialItems.has(`${link.date}|${link.label}`)));
-  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '江川海岸'), 'intro-kisarazu-coast-fireworks');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '12:40–13:20 Hender Scheme｜sukima 宮下公園'), 'intro-shibuya-design-stationery');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '13:35–14:35 HANDS 澀谷店｜大型文具'), 'intro-shibuya-design-stationery');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '15:20–17:15 森美術館｜Ron Mueck 展'), 'intro-ron-mueck-mori-2026');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '18:00–20:00 歌舞伎町 BON ODORI'), 'intro-kabukicho-bon-odori-2026');
   assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-13', '抵達後前往千葉幕張並休息'), null);
-  assert.equal(dailyIntroductionTargetId([{ date: '2026-08-15', label: '江川海岸', introductionId: 'missing' }], introductions.items, '2026-08-15', '江川海岸'), null);
+  assert.equal(dailyIntroductionTargetId([{ date: '2026-08-15', label: '不存在的行程', introductionId: 'missing' }], introductions.items, '2026-08-15', '不存在的行程'), null);
 });
 
 test('daily itinerary renderer switches to the matching introduction with accessible 44px links', async () => {
@@ -360,7 +369,7 @@ test('introduction snapshot covers the trip with safe official HTTPS sources', a
   assert.ok(introductions.items.every((item) => item.features.length >= 3));
   assert.ok(introductions.items.every((item) => item.background && item.familyTip));
   assert.ok(introductions.items.flatMap((item) => item.sources).every((source) => source.url.startsWith('https://')));
-  assert.equal(new Set(introductions.items.flatMap((item) => item.sources.map((source) => source.ref))).size, 20);
+  assert.equal(new Set(introductions.items.flatMap((item) => item.sources.map((source) => source.ref))).size, 21);
   const expectedCandidates = new Set(introductions.candidateCoverage.names);
   const actualCandidates = new Set(introductions.items.filter((item) => item.state === 'candidate').map((item) => item.sourceName));
   assert.deepEqual(actualCandidates, expectedCandidates);

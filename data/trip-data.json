@@ -67,38 +67,67 @@
     },
     {
       "date": "2026-08-15",
-      "cityArea": "千葉幕張 → 木更津",
+      "cityArea": "東京・澀谷／六本木／新宿",
       "highLevelItinerary": [
-        "江川海岸",
-        "木更津港",
-        "19:05–20:30 木更津港祭煙火大會"
+        "12:40–13:20 Hender Scheme｜sukima 宮下公園",
+        "13:20–13:35 步行前往 HANDS 澀谷店（約 12–15 分）",
+        "13:35–14:35 HANDS 澀谷店｜大型文具",
+        "14:40–15:10 Uber 前往六本木 Hills（抓 20–30 分）",
+        "15:20–17:15 森美術館｜Ron Mueck 展",
+        "17:20–18:00 Uber 前往歌舞伎町（抓 30–40 分）",
+        "18:00–20:00 歌舞伎町 BON ODORI",
+        "20:00 起 新宿晚餐",
+        "優先順序：U.F.O / mar → BON ODORI → 森美術館 → HANDS",
+        "延誤調整：先縮短 HANDS，其次縮短森美術館"
       ],
       "navigation": [
         {
-          "label": "江川海岸",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%B1%9F%E5%B7%9D%E6%B5%B7%E5%B2%B8+%E6%9C%A8%E6%9B%B4%E6%B4%A5+%E6%97%A5%E6%9C%AC",
+          "label": "Hender Scheme｜sukima 宮下公園",
           "state": "confirmed",
-          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 35.4014203,
-            "lng": 139.9021355,
-            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
-          }
+            "lat": 35.6627409,
+            "lng": 139.7018185,
+            "source": "Google Places public lookup (2026-08-15); visual orientation only"
+          },
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=sukima+Miyashita+Park",
+          "source": "使用者指定 2026-08-15 即時四站行程（公開安全摘要）"
         },
         {
-          "label": "木更津港",
-          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=%E6%9C%A8%E6%9B%B4%E6%B4%A5%E6%B8%AF+%E6%97%A5%E6%9C%AC",
+          "label": "HANDS 澀谷店",
           "state": "confirmed",
-          "source": "正式行程公開安全摘要（2026-08-13 同步）",
           "mapLocation": {
-            "lat": 35.3814139,
-            "lng": 139.9190909,
-            "source": "OpenStreetMap public place lookup (2026-08-13); visual orientation only"
-          }
+            "lat": 35.6620337,
+            "lng": 139.6979319,
+            "source": "Google Places public lookup (2026-08-15); visual orientation only"
+          },
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=HANDS+Shibuya",
+          "source": "使用者指定 2026-08-15 即時四站行程（公開安全摘要）"
+        },
+        {
+          "label": "森美術館｜六本木 Hills 森塔 53F",
+          "state": "confirmed",
+          "mapLocation": {
+            "lat": 35.6604621,
+            "lng": 139.7292785,
+            "source": "Google Places public lookup (2026-08-15); visual orientation only"
+          },
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Mori+Art+Museum",
+          "source": "使用者指定 2026-08-15 即時四站行程（公開安全摘要）"
+        },
+        {
+          "label": "歌舞伎町 BON ODORI｜新宿 Cinema City 廣場",
+          "state": "confirmed",
+          "mapLocation": {
+            "lat": 35.695552,
+            "lng": 139.7013105,
+            "source": "Google Places public lookup (2026-08-15); visual orientation only"
+          },
+          "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Shinjuku+Cine+City+Square",
+          "source": "使用者指定 2026-08-15 即時四站行程（公開安全摘要）"
         }
       ],
       "state": "confirmed",
-      "source": "正式行程公開安全摘要（2026-08-13 同步）"
+      "source": "使用者指定 2026-08-15 即時四站行程（公開安全摘要）"
     },
     {
       "date": "2026-08-16",
@@ -528,6 +557,7 @@
       "end": "2026-08-23"
     },
     "dayCount": 11,
-    "privacyBoundary": "公開版只含日期、地區、活動順序、公開導航與狀態；排除住宿、地址、訂位、價格、保險、財務與私人接送資料。"
+    "privacyBoundary": "公開版只含日期、地區、活動順序、公開導航與狀態；排除住宿、地址、訂位、價格、保險、財務與私人接送資料。",
+    "queriedAt": "2026-08-15T11:27:41+08:00"
   }
 }

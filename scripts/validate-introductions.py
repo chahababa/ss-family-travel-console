@@ -87,5 +87,12 @@ for index, link in enumerate(daily_links):
     assert key not in daily_link_keys, f"duplicate daily itinerary link: {key}"
     assert link["introductionId"] in ids, f"daily itinerary link {index} points to a missing introduction"
     daily_link_keys.add(key)
-assert any(link["date"] == "2026-08-15" and link["introductionId"] == "kisarazu-coast-fireworks" for link in daily_links), "8/15 Kisarazu introduction links missing"
+august_15_intro_ids = {
+    link["introductionId"] for link in daily_links if link["date"] == "2026-08-15"
+}
+assert august_15_intro_ids == {
+    "shibuya-design-stationery",
+    "ron-mueck-mori-2026",
+    "kabukicho-bon-odori-2026",
+}, f"8/15 Tokyo four-stop introduction coverage mismatch: {sorted(august_15_intro_ids)}"
 print(f"INTRODUCTION DATA VALIDATION PASSED: {len(items)} cards; {len(daily_links)} daily itinerary links; {len(photo_ids)} licensed, local 1280x720 WebP photos; {len(source_refs)} numbered official HTTPS sources; {len(actual_candidates)} candidate-library items covered.")

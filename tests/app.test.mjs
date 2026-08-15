@@ -149,7 +149,7 @@ test('weather config exactly covers all 11 public dates and has no private metad
   ]);
   assert.equal(config.locations.length, 11);
   assert.ok(hasValidWeatherConfig(config, trip.dailyPlans.map((day) => day.date)));
-  assert.deepEqual(config.locations[2], { date: '2026-08-15', locationLabel: '澀谷（跨區日代表地區）', lat: 35.6627409, lng: 139.7018185 });
+  assert.deepEqual(config.locations[2], { date: '2026-08-15', locationLabel: '六本木（跨區日代表地區）', lat: 35.6604621, lng: 139.7292785 });
   assert.deepEqual(config.locations[6], { date: '2026-08-19', locationLabel: '輕井澤（跨區日代表地區）', lat: 36.3391616, lng: 138.6331098 });
   assert.ok(config.locations.every((location) => Object.keys(location).sort().join(',') === 'date,lat,lng,locationLabel'));
 });
@@ -275,12 +275,19 @@ test('designated official itinerary is synchronized across all 11 days', async (
     Array.from({ length: 11 }, (_, index) => `2026-08-${String(13 + index).padStart(2, '0')}`),
   );
   const itinerary = new Map(trip.dailyPlans.map((day) => [day.date, day.highLevelItinerary.join('｜')]));
-  assert.match(itinerary.get('2026-08-15'), /Hender Scheme.*HANDS 澀谷店.*森美術館.*歌舞伎町 BON ODORI/s);
+  assert.match(itinerary.get('2026-08-15'), /森美術館.*Hender Scheme.*HANDS 澀谷店.*歌舞伎町 BON ODORI/s);
   assert.doesNotMatch(itinerary.get('2026-08-15'), /木更津|WACKO MARIA/);
   const august15 = trip.dailyPlans.find((day) => day.date === '2026-08-15');
+  assert.equal(august15.highLevelItinerary.length, 4);
+  assert.doesNotMatch(august15.highLevelItinerary.join('｜'), /\d{1,2}:\d{2}/);
+  assert.match(august15.highLevelItinerary.join('｜'), /Uber 約 20–30 分鐘.*步行約 12–15 分鐘.*Uber 約 30–40 分鐘/s);
   assert.equal(august15.navigation.length, 4);
-  assert.match(august15.highLevelItinerary.join('｜'), /U\.F\.O \/ mar → BON ODORI → 森美術館 → HANDS/);
-  assert.match(august15.highLevelItinerary.join('｜'), /延誤調整：先縮短 HANDS，其次縮短森美術館/);
+  assert.deepEqual(august15.navigation.map(({ label }) => label), [
+    '森美術館｜六本木 Hills 森塔 53F',
+    'Hender Scheme｜sukima 宮下公園',
+    'HANDS 澀谷店',
+    '歌舞伎町 BON ODORI｜新宿 Cinema City 廣場',
+  ]);
   assert.match(itinerary.get('2026-08-17'), /八ッ場水壩/);
   assert.match(itinerary.get('2026-08-18'), /四萬甌穴群/);
   assert.match(itinerary.get('2026-08-19'), /奧四萬湖.*伊香保溫泉石段街.*碓冰峠眼鏡橋/s);
@@ -309,10 +316,10 @@ test('daily itinerary introduction links resolve exact official items to safe in
   assert.equal(introductions.dailyItineraryLinks.length, 27);
   assert.ok(introductions.dailyItineraryLinks.every((link) => itemIds.has(link.introductionId)));
   assert.ok(introductions.dailyItineraryLinks.every((link) => officialItems.has(`${link.date}|${link.label}`)));
-  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '12:40–13:20 Hender Scheme｜sukima 宮下公園'), 'intro-shibuya-design-stationery');
-  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '13:35–14:35 HANDS 澀谷店｜大型文具'), 'intro-shibuya-design-stationery');
-  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '15:20–17:15 森美術館｜Ron Mueck 展'), 'intro-ron-mueck-mori-2026');
-  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '18:00–20:00 歌舞伎町 BON ODORI'), 'intro-kabukicho-bon-odori-2026');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '森美術館｜Ron Mueck 展（第一站）'), 'intro-ron-mueck-mori-2026');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', 'Hender Scheme｜sukima 宮下公園（從森美術館 Uber 約 20–30 分鐘）'), 'intro-shibuya-design-stationery');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', 'HANDS 澀谷店｜大型文具（從宮下公園步行約 12–15 分鐘）'), 'intro-shibuya-design-stationery');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '歌舞伎町 BON ODORI（從澀谷 Uber 約 30–40 分鐘）'), 'intro-kabukicho-bon-odori-2026');
   assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-13', '抵達後前往千葉幕張並休息'), null);
   assert.equal(dailyIntroductionTargetId([{ date: '2026-08-15', label: '不存在的行程', introductionId: 'missing' }], introductions.items, '2026-08-15', '不存在的行程'), null);
 });

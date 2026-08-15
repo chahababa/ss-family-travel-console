@@ -57,6 +57,12 @@ export const introductionQuickNavEntries = (items = []) => items.map((item) => (
   state: item.state || null,
 }));
 
+export const dailyIntroductionTargetId = (links = [], items = [], date, label) => {
+  const itemIds = new Set(items.map((item) => item?.id).filter(Boolean));
+  const match = links.find((link) => link?.date === date && link?.label === label);
+  return match && itemIds.has(match.introductionId) ? introductionTargetId(match.introductionId) : null;
+};
+
 export const hasValidMapLocation = (value) => Boolean(
   value && Number.isFinite(value.lat) && Number.isFinite(value.lng)
   && value.lat >= -90 && value.lat <= 90 && value.lng >= -180 && value.lng <= 180

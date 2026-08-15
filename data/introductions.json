@@ -28,6 +28,35 @@
       ]
     },
     {
+      "id": "kisarazu-coast-fireworks",
+      "title": "江川海岸與木更津港煙火：從東京灣潮間帶走進港町夏夜",
+      "dates": [
+        "2026-08-15"
+      ],
+      "area": "千葉・木更津",
+      "category": "海岸與夏祭",
+      "summary": "白天先看東京灣自然干潟、遠淺水面與港區地景，晚上再到木更津港內港欣賞港町代表性的夏日花火。",
+      "features": [
+        "江川海岸位於盤州干潟，可觀察遠淺潮間帶、水面反光與東京灣沿岸地景。",
+        "舊有海中電柱已拆除；現在的看點是干潟、夕景、工場夜景與遠方的東京灣景觀。",
+        "第79回木更津港祭煙火於2026年8月15日19:05至20:30在木更津港內港舉行，且官方標示不順延。"
+      ],
+      "background": "木更津因港灣、漁業與東京灣交通發展出鮮明的港町性格。江川海岸保留自然干潟景觀；港祭則以中之島大橋與內港為舞台，把地方夏祭傳統集中在同一天晚上。",
+      "familyTip": "江川海岸附近有深水道與禁止進入區，請只在允許區域活動；海中電柱已不存在，不要為拍照越界。煙火人潮多，提早安排移動、補水與孩子可辨識的集合方式，並於出發前查看木更津市官方的當日舉辦狀況。",
+      "sources": [
+        {
+          "ref": 19,
+          "title": "千葉縣官方觀光網站：江川海岸",
+          "url": "https://maruchiba.jp/spot/detail_10650.html"
+        },
+        {
+          "ref": 20,
+          "title": "木更津市：第79回木更津港祭煙火大會",
+          "url": "https://www.city.kisarazu.lg.jp/soshiki/keizai/kankoshinko/2/2/14381.html"
+        }
+      ]
+    },
+    {
       "id": "kusatsu-yubatake",
       "title": "草津湯畑：看見溫泉如何成為一座城的中心",
       "dates": [
@@ -393,5 +422,137 @@
       "start": "2026-08-13",
       "end": "2026-08-23"
     }
-  }
+  },
+  "dailyItineraryLinks": [
+    {
+      "date": "2026-08-14",
+      "label": "Summer Sonic 韓團日",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-14",
+      "label": "BABYMONSTER 演出",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-14",
+      "label": "場館周邊用餐與室內休息",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-14",
+      "label": "JENNIE 演出",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-15",
+      "label": "江川海岸",
+      "introductionId": "kisarazu-coast-fireworks"
+    },
+    {
+      "date": "2026-08-15",
+      "label": "木更津港",
+      "introductionId": "kisarazu-coast-fireworks"
+    },
+    {
+      "date": "2026-08-15",
+      "label": "19:05–20:30 木更津港祭煙火大會",
+      "introductionId": "kisarazu-coast-fireworks"
+    },
+    {
+      "date": "2026-08-16",
+      "label": "Summer Sonic 音樂祭",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-16",
+      "label": "Jamiroquai 演出",
+      "introductionId": "summer-sonic"
+    },
+    {
+      "date": "2026-08-17",
+      "label": "八ッ場水壩與湖景休息",
+      "introductionId": "candidate-yamba-roadside-station"
+    },
+    {
+      "date": "2026-08-17",
+      "label": "草津湯畑夜景與溫泉街",
+      "introductionId": "kusatsu-yubatake"
+    },
+    {
+      "date": "2026-08-18",
+      "label": "上午草津溫泉與湯畑散步",
+      "introductionId": "kusatsu-yubatake"
+    },
+    {
+      "date": "2026-08-18",
+      "label": "四萬甌穴群",
+      "introductionId": "shima-onsen"
+    },
+    {
+      "date": "2026-08-18",
+      "label": "四萬清流親水活動",
+      "introductionId": "shima-onsen"
+    },
+    {
+      "date": "2026-08-18",
+      "label": "傍晚抵達四萬溫泉並休息",
+      "introductionId": "shima-onsen"
+    },
+    {
+      "date": "2026-08-19",
+      "label": "10:00–11:00 奧四萬湖環湖與展望點",
+      "introductionId": "shima-onsen"
+    },
+    {
+      "date": "2026-08-19",
+      "label": "碓冰峠眼鏡橋與舊碓冰峠",
+      "introductionId": "usui-railway"
+    },
+    {
+      "date": "2026-08-20",
+      "label": "11:40–13:10 鬼押出園火山熔岩步道",
+      "introductionId": "mountain-route"
+    },
+    {
+      "date": "2026-08-20",
+      "label": "13:20–13:50 淺間牧場",
+      "introductionId": "mountain-route"
+    },
+    {
+      "date": "2026-08-20",
+      "label": "15:20–16:00 白絲瀑布",
+      "introductionId": "karuizawa-nature-culture"
+    },
+    {
+      "date": "2026-08-20",
+      "label": "21:00–21:30 輕井澤高原教會 Candle Night",
+      "introductionId": "karuizawa-nature-culture"
+    },
+    {
+      "date": "2026-08-21",
+      "label": "09:00–10:00 雲場池散步",
+      "introductionId": "karuizawa-nature-culture"
+    },
+    {
+      "date": "2026-08-21",
+      "label": "10:15–11:45 舊輕井澤銀座逛街",
+      "introductionId": "karuizawa-nature-culture"
+    },
+    {
+      "date": "2026-08-22",
+      "label": "麻布十番納涼祭",
+      "introductionId": "tokyo-local-culture"
+    },
+    {
+      "date": "2026-08-22",
+      "label": "文具行與東京購物",
+      "introductionId": "tokyo-local-culture"
+    },
+    {
+      "date": "2026-08-22",
+      "label": "Ron Mueck 朗・穆克雕塑展（候選）",
+      "introductionId": "candidate-ron-mueck"
+    }
+  ]
 }

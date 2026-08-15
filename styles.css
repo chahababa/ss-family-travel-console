@@ -121,6 +121,10 @@ p { margin: .35rem 0; }
 .route, .list { margin: 0; padding-left: 1.35rem; }
 .route { display: grid; gap: .75rem; }
 .route .card { list-style-position: outside; }
+.daily-itinerary-list { display: grid; gap: .2rem; }
+.daily-intro-link { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; color: var(--brand-dark); font-weight: 800; line-height: 1.35; text-decoration-thickness: .09em; text-underline-offset: .2em; }
+.daily-intro-link:hover { color: var(--button-active); }
+.daily-intro-arrow { flex: 0 0 auto; color: var(--button); font-size: 1.1em; }
 .status { display: inline-flex; align-items: center; border-radius: 99px; padding: .1rem .5rem; font-size: .82rem; font-weight: 800; white-space: nowrap; }
 .status-confirmed { color: var(--confirmed-ink); background: var(--confirmed-bg); }
 .status-candidate { color: var(--candidate-ink); background: var(--candidate-bg); }

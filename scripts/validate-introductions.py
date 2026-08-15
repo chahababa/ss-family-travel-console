@@ -28,6 +28,7 @@ def webp_dimensions(path):
 data = json.loads((ROOT / "data" / "introductions.json").read_text(encoding="utf-8"))
 items = data.get("items")
 assert isinstance(items, list) and len(items) >= 8, "introductions.items must contain the trip introductions"
+trip = json.loads((ROOT / "data" / "trip-data.json").read_text(encoding="utf-8"))
 renderer = (ROOT / "app.js").read_text(encoding="utf-8")
 assert "本站版本經 16:9 裁切與 WebP 壓縮" in renderer, "photo derivative disclosure missing from renderer"
 
@@ -73,4 +74,18 @@ coverage = data.get("candidateCoverage", {})
 expected_candidates = set(coverage.get("names", []))
 actual_candidates = {item.get("sourceName") for item in items if item.get("state") == "candidate"}
 assert expected_candidates and actual_candidates == expected_candidates, f"candidate library coverage mismatch: expected={sorted(expected_candidates)}, actual={sorted(actual_candidates)}"
-print(f"INTRODUCTION DATA VALIDATION PASSED: {len(items)} cards; {len(photo_ids)} licensed, local 1280x720 WebP photos; {len(source_refs)} numbered official HTTPS sources; {len(actual_candidates)} candidate-library items covered.")
+
+daily_links = data.get("dailyItineraryLinks")
+assert isinstance(daily_links, list) and daily_links, "daily itinerary links must be present"
+daily_items = {(day["date"], label) for day in trip["dailyPlans"] for label in day["highLevelItinerary"]}
+daily_link_keys = set()
+for index, link in enumerate(daily_links):
+    required_link = {"date", "label", "introductionId"}
+    assert set(link) == required_link, f"daily itinerary link {index} has unexpected fields"
+    key = (link["date"], link["label"])
+    assert key in daily_items, f"daily itinerary link {index} does not match an official itinerary item"
+    assert key not in daily_link_keys, f"duplicate daily itinerary link: {key}"
+    assert link["introductionId"] in ids, f"daily itinerary link {index} points to a missing introduction"
+    daily_link_keys.add(key)
+assert any(link["date"] == "2026-08-15" and link["introductionId"] == "kisarazu-coast-fireworks" for link in daily_links), "8/15 Kisarazu introduction links missing"
+print(f"INTRODUCTION DATA VALIDATION PASSED: {len(items)} cards; {len(daily_links)} daily itinerary links; {len(photo_ids)} licensed, local 1280x720 WebP photos; {len(source_refs)} numbered official HTTPS sources; {len(actual_candidates)} candidate-library items covered.")

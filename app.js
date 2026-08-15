@@ -1,4 +1,4 @@
-import { isSafeMapsUrl, isSafeDriveFolderUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, hasValidPrivateDocumentShortcuts, weatherCodeLabel, introductionQuickNavEntries } from './helpers.js?v=20260813-8';
+import { isSafeMapsUrl, isSafeDriveFolderUrl, stateLabel, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, hasValidPrivateDocumentShortcuts, weatherCodeLabel, introductionQuickNavEntries, dailyIntroductionTargetId } from './helpers.js?v=20260815-1';
 import { DailyWeatherController } from './weather.js?v=20260813-2';
 
 const app = document.querySelector('#app-content');
@@ -121,13 +121,18 @@ function renderPrivateDocuments() {
 function dayPicker() {
   return `<label>選擇日期 <select id="day-picker" aria-label="選擇行程日期">${tripData.dailyPlans.map((day) => `<option value="${day.date}" ${day.date === selectedDate ? 'selected' : ''}>${formatDate(day.date)}｜${escapeHtml(day.cityArea)}</option>`).join('')}</select></label>`;
 }
+function dailyItineraryItem(day, item) {
+  const targetId = dailyIntroductionTargetId(introductionData?.dailyItineraryLinks, introductionData?.items, day.date, item);
+  if (!targetId) return `<li>${escapeHtml(item)}</li>`;
+  return `<li><a class="daily-intro-link" href="#${escapeHtml(targetId)}" data-daily-intro data-intro-target="${escapeHtml(targetId)}">${escapeHtml(item)}<span class="daily-intro-arrow" aria-hidden="true">→</span><span class="sr-only">：查看行程介紹</span></a></li>`;
+}
 function renderDaily() {
   const day = getDay(); const index = tripData.dailyPlans.indexOf(day);
   const links = day.navigation.length ? day.navigation.map((link) => `<li class="card"><h3>${escapeHtml(link.label)} ${status(link.state)}</h3>${mapsAction(link)}${sourceLine(link.source)}</li>`).join('') : '<p class="empty">此日尚無儲存的公開導航連結</p>';
-  return `<section class="view" aria-labelledby="view-title">${heading('每日行程', '日期選擇會在本裝置瀏覽器中保留。')}
+  return `<section class="view" aria-labelledby="view-title">${heading('每日行程', '日期選擇會在本裝置瀏覽器中保留；可點選有底線的景點與活動查看介紹。')}
     <div class="day-nav">${dayPicker()}<button type="button" data-day="${index - 1}" ${index === 0 ? 'disabled' : ''}>前一天</button><button type="button" data-day="${index + 1}" ${index === tripData.dailyPlans.length - 1 ? 'disabled' : ''}>下一天</button></div>
     <div id="daily-weather-panel">${weatherPanelMarkup()}</div>
-    <article class="card"><p><strong>${formatDate(day.date)}</strong>｜${escapeHtml(day.cityArea)} ${status(day.state)}</p><ul class="list">${day.highLevelItinerary.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>${sourceLine(day.source)}</article>
+    <article class="card"><p><strong>${formatDate(day.date)}</strong>｜${escapeHtml(day.cityArea)} ${status(day.state)}</p><ul class="list daily-itinerary-list">${day.highLevelItinerary.map((item) => dailyItineraryItem(day, item)).join('')}</ul>${sourceLine(day.source)}</article>
     <h3>公開導航</h3><ul class="route">${links}</ul>
   </section>`;
 }
@@ -316,6 +321,13 @@ app.addEventListener('error', (event) => {
   figure.querySelector('.intro-photo-fallback')?.removeAttribute('hidden');
 }, true);
 app.addEventListener('click', (event) => {
+  const dailyIntroLink = event.target.closest('[data-daily-intro]');
+  if (dailyIntroLink) {
+    event.preventDefault();
+    window.location.hash = dailyIntroLink.dataset.introTarget;
+    switchView('introductions', dailyIntroLink);
+    return;
+  }
   const introLink = event.target.closest('[data-intro-target], [data-intro-return]');
   if (introLink) window.setTimeout(handleIntroductionHashNavigation, 0);
   const go = event.target.closest('[data-go]'); if (go) return switchView(go.dataset.go, go);

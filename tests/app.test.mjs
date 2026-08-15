@@ -4,7 +4,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { cp, mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { stateLabel, isSafeMapsUrl, isSafeDriveFolderUrl, hasValidPrivateDocumentShortcuts, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries } from '../helpers.js';
+import { stateLabel, isSafeMapsUrl, isSafeDriveFolderUrl, hasValidPrivateDocumentShortcuts, storageKey, saveId, hasValidMapLocation, hasValidWeatherConfig, buildOpenMeteoUrl, isOpenMeteoOutOfRangePayload, parseOpenMeteoDaily, WeatherOutOfRangeError, weatherCodeLabel, introductionTargetId, introductionQuickNavEntries, dailyIntroductionTargetId } from '../helpers.js';
 import { DailyWeatherController, WEATHER_CACHE_TTL_MS } from '../weather.js';
 
 test('state labels distinguish every source state', () => {
@@ -101,7 +101,7 @@ test('private document renderer keeps public-risk notice, safe external-link att
   assert.match(source, /住宿資料夾可能含取消紀錄；請以最新 Notion／確認信為準/);
   assert.match(source, /私人文件捷徑暫時無法載入；原行程內容不受影響/);
   assert.match(markup, /data-view="documents">私人文件捷徑/);
-  assert.match(markup, /styles\.css\?v=20260813-9/);
+  assert.match(markup, /styles\.css\?v=20260815-1/);
   assert.match(styles, /\.document-shortcut-card \.button-link \{ width: 100%/);
   assert.match(styles, /button, \.button-link \{[\s\S]*min-height: 44px/);
 });
@@ -124,7 +124,7 @@ test('button system keeps every button variant in the orange palette with access
   assert.match(styles, /button:disabled, \.button-link\[aria-disabled="true"\] \{[\s\S]*cursor: not-allowed;[\s\S]*background: var\(--button-disabled\);/);
   assert.match(styles, /\.danger \{ border-color: var\(--button-danger\); background: var\(--button-danger\); \}/);
   assert.match(styles, /button:focus-visible, \.button-link:focus-visible, a:focus-visible/);
-  assert.match(markup, /styles\.css\?v=20260813-9/);
+  assert.match(markup, /styles\.css\?v=20260815-1/);
 });
 
 test('local state keys stay namespaced and stable', () => {
@@ -286,11 +286,42 @@ test('designated official itinerary is synchronized across all 11 days', async (
 test('introduction quick navigation derives its exact count, order, hrefs, and candidate states from source items', async () => {
   const { default: introductions } = await import('../data/introductions.json', { with: { type: 'json' } });
   const entries = introductionQuickNavEntries(introductions.items);
-  assert.equal(entries.length, 12);
+  assert.equal(entries.length, 13);
   assert.deepEqual(entries.map((entry) => entry.id), introductions.items.map((item) => item.id));
   assert.deepEqual(entries.map((entry) => entry.href), introductions.items.map((item) => `#intro-${item.id}`));
   assert.ok(entries.every((entry) => entry.targetId === introductionTargetId(entry.id)));
   assert.deepEqual(entries.filter((entry) => entry.state === 'candidate').map((entry) => entry.id), introductions.items.filter((item) => item.state === 'candidate').map((item) => item.id));
+});
+
+test('daily itinerary introduction links resolve exact official items to safe in-page targets', async () => {
+  const [{ default: introductions }, { default: trip }] = await Promise.all([
+    import('../data/introductions.json', { with: { type: 'json' } }),
+    import('../data/trip-data.json', { with: { type: 'json' } }),
+  ]);
+  const itemIds = new Set(introductions.items.map((item) => item.id));
+  const officialItems = new Set(trip.dailyPlans.flatMap((day) => day.highLevelItinerary.map((label) => `${day.date}|${label}`)));
+  assert.equal(introductions.dailyItineraryLinks.length, 26);
+  assert.ok(introductions.dailyItineraryLinks.every((link) => itemIds.has(link.introductionId)));
+  assert.ok(introductions.dailyItineraryLinks.every((link) => officialItems.has(`${link.date}|${link.label}`)));
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-15', '江川海岸'), 'intro-kisarazu-coast-fireworks');
+  assert.equal(dailyIntroductionTargetId(introductions.dailyItineraryLinks, introductions.items, '2026-08-13', '抵達後前往千葉幕張並休息'), null);
+  assert.equal(dailyIntroductionTargetId([{ date: '2026-08-15', label: '江川海岸', introductionId: 'missing' }], introductions.items, '2026-08-15', '江川海岸'), null);
+});
+
+test('daily itinerary renderer switches to the matching introduction with accessible 44px links', async () => {
+  const fs = await import('node:fs/promises');
+  const [source, styles, markup] = await Promise.all([
+    fs.readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../styles.css', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../index.html', import.meta.url), 'utf8'),
+  ]);
+  assert.match(source, /function dailyItineraryItem\(day, item\)/);
+  assert.match(source, /data-daily-intro data-intro-target=/);
+  assert.match(source, /window\.location\.hash = dailyIntroLink\.dataset\.introTarget/);
+  assert.match(source, /switchView\('introductions', dailyIntroLink\)/);
+  assert.match(source, /可點選有底線的景點與活動查看介紹/);
+  assert.match(styles, /\.daily-intro-link \{[^}]*min-height: 44px/);
+  assert.match(markup, /app\.js\?v=20260815-1/);
 });
 
 test('introduction renderer keeps one matching quick target and return anchor per source item', async () => {
@@ -329,7 +360,7 @@ test('introduction snapshot covers the trip with safe official HTTPS sources', a
   assert.ok(introductions.items.every((item) => item.features.length >= 3));
   assert.ok(introductions.items.every((item) => item.background && item.familyTip));
   assert.ok(introductions.items.flatMap((item) => item.sources).every((source) => source.url.startsWith('https://')));
-  assert.equal(new Set(introductions.items.flatMap((item) => item.sources.map((source) => source.ref))).size, 18);
+  assert.equal(new Set(introductions.items.flatMap((item) => item.sources.map((source) => source.ref))).size, 20);
   const expectedCandidates = new Set(introductions.candidateCoverage.names);
   const actualCandidates = new Set(introductions.items.filter((item) => item.state === 'candidate').map((item) => item.sourceName));
   assert.deepEqual(actualCandidates, expectedCandidates);
